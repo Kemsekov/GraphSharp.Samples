@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleBase", "SampleBase\SampleBase.csproj", "{F5FBBB19-9502-491C-B812-2007D82DEA32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindAllNodesPath", "FindAllNodesPath\FindAllNodesPath.csproj", "{C8F3823E-F9D5-42F0-B87E-F013EF1E5D0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindTheShortestPath", "FindTheShortestPath\FindTheShortestPath.csproj", "{D4F38C82-EBD6-4BD3-9932-40CD4A16BAF7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F5FBBB19-9502-491C-B812-2007D82DEA32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5FBBB19-9502-491C-B812-2007D82DEA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5FBBB19-9502-491C-B812-2007D82DEA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5FBBB19-9502-491C-B812-2007D82DEA32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8F3823E-F9D5-42F0-B87E-F013EF1E5D0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8F3823E-F9D5-42F0-B87E-F013EF1E5D0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8F3823E-F9D5-42F0-B87E-F013EF1E5D0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8F3823E-F9D5-42F0-B87E-F013EF1E5D0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4F38C82-EBD6-4BD3-9932-40CD4A16BAF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4F38C82-EBD6-4BD3-9932-40CD4A16BAF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4F38C82-EBD6-4BD3-9932-40CD4A16BAF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4F38C82-EBD6-4BD3-9932-40CD4A16BAF7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
