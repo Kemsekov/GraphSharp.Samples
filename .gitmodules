@@ -1,0 +1,3 @@
+[submodule "GraphSharp"] 
+  path = GraphSharp
+  url = https://github.com/Kemsekov/GraphSharp.git
