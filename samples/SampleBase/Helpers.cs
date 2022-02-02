@@ -67,4 +67,14 @@ public static class Helpers
             image.SaveAsJpeg("example.jpg");
         });
     }
+    public static float ComputePathLength(IList<INode> path,Func<INode,INode,float> distance){
+        float res = 0;
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            var current = path[i];
+            var next = path[i + 1];
+            res+=distance(current,next);
+        }
+        return res;
+    }
 }
