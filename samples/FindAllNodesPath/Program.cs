@@ -6,10 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 
-/// <summary>
-/// this program
-/// </summary>
-/// <returns></returns>
+/// this program shows how to find path that visits all nodes
 
 ArgumentsHandler argz = new("settings.json");
 
