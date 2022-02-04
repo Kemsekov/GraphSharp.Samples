@@ -45,7 +45,7 @@ public static class Helpers
             }
         }
     }
-    public static void CreateImage(GraphStructureBase nodes, IList<INode>? path, ArgumentsHandler argz)
+    public static void CreateImage(IGraphStructure nodes, IList<INode>? path, ArgumentsHandler argz)
     {
         MeasureTime(() =>
         {
@@ -78,7 +78,7 @@ public static class Helpers
         }
         return res;
     }
-    public static GraphStructureBase CreateNodes(ArgumentsHandler argz)
+    public static IGraphStructure CreateNodes(ArgumentsHandler argz)
     {
     GraphStructureOperation? result = default;
     Helpers.MeasureTime(() =>
