@@ -5,6 +5,7 @@ using GraphSharp;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
+using GraphSharp.GraphStructures;
 
 public static class Helpers
 {
@@ -44,7 +45,7 @@ public static class Helpers
             }
         }
     }
-    public static void CreateImage(NodesFactory nodes, IList<INode>? path, ArgumentsHandler argz)
+    public static void CreateImage(GraphStructureBase nodes, IList<INode>? path, ArgumentsHandler argz)
     {
         MeasureTime(() =>
         {
@@ -77,4 +78,20 @@ public static class Helpers
         }
         return res;
     }
+    public static GraphStructureBase CreateNodes(ArgumentsHandler argz)
+    {
+    GraphStructureOperation? result = default;
+    Helpers.MeasureTime(() =>
+    {
+        System.Console.WriteLine("Creating nodes...");
+        var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
+        var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
+
+        result = new GraphStructure(id => new NodeXY(id, rand.NextDouble(), rand.NextDouble()), (node, parent) => new NodeConnector(node, parent), conRand)
+            .CreateNodes(argz.nodesCount)
+            .ForEach()
+            .ConnectToClosest(argz.minEdges, argz.maxEdges, (node1, node2) => (float)((NodeXY)node1).Distance((NodeXY)node2));
+    });
+    return result ?? throw new Exception("Create node failure");;
+}
 }
