@@ -87,10 +87,16 @@ public static class Helpers
         var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
         var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
 
-        result = new GraphStructure(id => new NodeXY(id, rand.NextDouble(), rand.NextDouble()), (node, parent) => new NodeConnector(node, parent), conRand)
+        result = new GraphStructure()
+        {
+            Rand = conRand,
+            CreateEdge = (node, parent) => new NodeConnector(node, parent),
+            CreateNode = id => new NodeXY(id, rand.NextDouble(), rand.NextDouble()),
+            Distance = (node1, node2) => (float)((NodeXY)node1).Distance((NodeXY)node2)
+        }
             .CreateNodes(argz.nodesCount)
             .ForEach()
-            .ConnectToClosest(argz.minEdges, argz.maxEdges, (node1, node2) => (float)((NodeXY)node1).Distance((NodeXY)node2));
+            .ConnectToClosest(argz.minEdges, argz.maxEdges);
     });
     return result ?? throw new Exception("Create node failure");;
 }
