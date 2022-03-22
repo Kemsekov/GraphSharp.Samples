@@ -5,34 +5,35 @@ using GraphSharp.Nodes;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
 
-/// <summary>
-/// works only with
-/// </summary>
-public class AllPathFinder : IVisitor<NodeXY,NodeConnector>
+public class Algorithm : Visitor<NodeXY,NodeConnector>
 {
     byte[] _visited;
-    public IList<INode> Path;
+    public IList<NodeXY> Path;
     public bool PathDone = false;
     /// <summary>
     /// _trace[node] = parent
     /// </summary>
-    IDictionary<INode,INode> _trace = new ConcurrentDictionary<INode,INode>();
-    public AllPathFinder(int nodesCount)
+    IDictionary<NodeXY,NodeXY> _trace = new ConcurrentDictionary<NodeXY,NodeXY>();
+
+    public override IPropagator<NodeXY> Propagator{get;}
+
+    public Algorithm(int nodesCount)
     {
+        Propagator = new ParallelPropagator<NodeXY,NodeConnector>(this);
         _visited = new byte[nodesCount];
-        Path = new List<INode>(nodesCount);
+        Path = new List<NodeXY>(nodesCount);
     }
-    public void EndVisit()
+    public override void EndVisit()
     {
 
     }
 
-    public bool Select(NodeConnector edge)
+    public override bool Select(NodeConnector edge)
     {
         var n = edge.Node;
         return Path.Count==0 || n.Id==Path.Last().Id;
     }
-    public void Visit(NodeXY node)
+    public override void Visit(NodeXY node)
     {
         if(PathDone) return;
 
