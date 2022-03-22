@@ -1,30 +1,34 @@
 using System.Collections.Concurrent;
 using GraphSharp.Edges;
 using GraphSharp.Nodes;
+using GraphSharp.Propagators;
 using GraphSharp.Visitors;
-public class PathFinder : IVisitor
+public class Algorithm : Visitor<NodeXY,NodeConnector>
 {
     /// <summary>
     /// _path[node] = parent 
     /// </summary>
-    IDictionary<INode, INode> _path = new ConcurrentDictionary<INode, INode>();
+    IDictionary<NodeXY, NodeXY> _path = new ConcurrentDictionary<NodeXY, NodeXY>();
     /// <summary>
     /// what is the length of path from startNode to some other node so far.  
     /// </summary>
-    IDictionary<INode, double> _pathLength = new ConcurrentDictionary<INode, double>();
-    private INode _startNode;
+    IDictionary<NodeXY, double> _pathLength = new ConcurrentDictionary<NodeXY, double>();
+    NodeXY _startNode;
+
+    public override IPropagator<NodeXY> Propagator{get;}
 
     /// <param name="startNode">Node from which we need to find a shortest path</param>
-    public PathFinder(INode startNode)
+    public Algorithm(NodeXY startNode)
     {
         this._startNode = startNode;
         _pathLength[startNode] = 0;
+        Propagator = new ParallelPropagator<NodeXY,NodeConnector>(this);
     }
-    public void EndVisit()
+    public override void EndVisit()
     {
     }
 
-    public bool Select(IEdge Edge)
+    public override bool Select(NodeConnector Edge)
     {
         bool updatePath = true;
         if (Edge is NodeConnector connection)
@@ -47,19 +51,19 @@ public class PathFinder : IVisitor
         return true;
     }
 
-    public void Visit(INode node)
+    public override void Visit(NodeXY node)
     {
         //do nothing. We do not actually need to do anything here.
     }
 
     /// <param name="end"></param>
     /// <returns>Null if path not found</returns>
-    public List<INode>? GetPath(INode end)
+    public List<NodeXY>? GetPath(NodeXY end)
     {
         if (!_path.ContainsKey(end)) return null;
-        var path = new List<INode>();
+        var path = new List<NodeXY>();
         while (true)
-            if (_path.TryGetValue(end, out INode? parent))
+            if (_path.TryGetValue(end, out NodeXY? parent))
             {
                 path.Add(end);
                 end = parent;
@@ -69,7 +73,7 @@ public class PathFinder : IVisitor
         path.Reverse();
         return path;
     }
-    public double GetPathLength(INode node){
+    public double GetPathLength(NodeXY node){
         if(_pathLength.TryGetValue(node,out double length)){
             return length;
         }

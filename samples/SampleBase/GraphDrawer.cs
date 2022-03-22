@@ -42,7 +42,7 @@ public class GraphDrawer
         Image.Mutate(x => x.Clear(new GraphicsOptions(), new SolidBrush(color)));
         return Image;
     }
-    public Image<Rgba32> DrawNodes(IList<INode> nodes)
+    public Image<Rgba32> DrawNodes(IList<NodeXY> nodes)
     {
         Image.Mutate(x =>
         {
@@ -55,7 +55,7 @@ public class GraphDrawer
         });
         return Image;
     }
-    public Image<Rgba32> DrawNodeConnections(IList<INode> nodes)
+    public Image<Rgba32> DrawNodeConnections(IList<NodeXY> nodes)
     {
         Image.Mutate(x =>
         {
@@ -72,7 +72,7 @@ public class GraphDrawer
         return Image;
     }
 
-    public Image<Rgba32> DrawPath(IList<INode> path)
+    public Image<Rgba32> DrawPath(IList<NodeXY> path)
     {
         Dictionary<(int,int),bool> drawn = new();
         Image.Mutate(x =>
@@ -87,7 +87,7 @@ public class GraphDrawer
         });
         return Image;
     }
-    public void DrawNodeId(IImageProcessingContext x, INode node, Size ImageSize)
+    public void DrawNodeId(IImageProcessingContext x, NodeXY node, Size ImageSize)
     {
         if (node is NodeXY nodeXY)
         {
@@ -96,7 +96,7 @@ public class GraphDrawer
             x.DrawText(node.Id.ToString(), Font, Color.Violet, point);
         }
     }
-    public void DrawNode(IImageProcessingContext x, INode node, Size ImageSize, float nodeSize)
+    public void DrawNode(IImageProcessingContext x, NodeXY node, Size ImageSize, float nodeSize)
     {
         if (node is NodeXY nodeXY)
         {
@@ -105,7 +105,7 @@ public class GraphDrawer
             x.FillPolygon(new DrawingOptions() { }, DrawNodeBrush, ellipse.Points.ToArray());
         }
     }
-    public void DrawConnection(IImageProcessingContext x, INode node1, INode node2, Size ImageSize)
+    public void DrawConnection(IImageProcessingContext x, NodeXY node1, NodeXY node2, Size ImageSize)
     {
         if (node1 is NodeXY n1 && node2 is NodeXY n2)
         {

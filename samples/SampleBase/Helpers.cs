@@ -22,7 +22,7 @@ public static class Helpers
         Console.WriteLine($"End operation in {watch.ElapsedMilliseconds} Milliseconds");
         Console.ResetColor();
     }
-    public static void ValidatePath(IList<INode> path)
+    public static void ValidatePath(IList<NodeXY> path)
     {
         for (int i = 0; i < path.Count - 1; i++)
         {
@@ -32,7 +32,7 @@ public static class Helpers
                 throw new Exception("Path is not valid!");
         }
     }
-    public static void PrintPath(IList<INode> path)
+    public static void PrintPath(IList<NodeXY> path)
     {
         System.Console.WriteLine("---Path");
         foreach (var n in path)
@@ -45,7 +45,7 @@ public static class Helpers
             }
         }
     }
-    public static void CreateImage(IGraphStructure nodes, IList<INode>? path, ArgumentsHandler argz)
+    public static void CreateImage(IGraphStructure<NodeXY> nodes, IList<NodeXY>? path, ArgumentsHandler argz)
     {
         MeasureTime(() =>
         {
@@ -68,7 +68,7 @@ public static class Helpers
             image.SaveAsJpeg("example.jpg");
         });
     }
-    public static float ComputePathLength(IList<INode> path,Func<INode,INode,float> distance){
+    public static float ComputePathLength(IList<NodeXY> path,Func<NodeXY,NodeXY,float> distance){
         float res = 0;
         for (int i = 0; i < path.Count - 1; i++)
         {
@@ -78,21 +78,24 @@ public static class Helpers
         }
         return res;
     }
-    public static IGraphStructure CreateNodes(ArgumentsHandler argz)
+    public static IGraphStructure<NodeXY> CreateNodes(ArgumentsHandler argz)
     {
-    GraphStructureOperation? result = default;
-    Helpers.MeasureTime(() =>
+    GraphStructureOperation<NodeXY,NodeConnector>? result = default;
+    MeasureTime(() =>
     {
         System.Console.WriteLine("Creating nodes...");
         var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
         var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
 
-        result = new GraphStructure()
+        var createEdge = (NodeXY node, NodeXY parent) => new NodeConnector(node, parent);
+        var createNode = (int id) => new NodeXY(id, rand.NextDouble(), rand.NextDouble());
+        var distance = (NodeXY node1,NodeXY node2) => (float)((NodeXY)node1).Distance((NodeXY)node2);
+
+
+        result = new GraphStructure<NodeXY,NodeConnector>(createNode,createEdge)
         {
+            Distance = distance,
             Rand = conRand,
-            CreateEdge = (node, parent) => new NodeConnector(node, parent),
-            CreateNode = id => new NodeXY(id, rand.NextDouble(), rand.NextDouble()),
-            Distance = (node1, node2) => (float)((NodeXY)node1).Distance((NodeXY)node2)
         }
             .CreateNodes(argz.nodesCount)
             .ForEach()
