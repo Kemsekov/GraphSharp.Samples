@@ -87,7 +87,7 @@ public static class Helpers
         var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
         var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
 
-        var createEdge = (NodeXY node, NodeXY parent) => new NodeConnector(node, parent);
+        var createEdge = (NodeXY parent,NodeXY node) => new NodeConnector(parent,node);
         var createNode = (int id) => new NodeXY(id, rand.NextDouble(), rand.NextDouble());
         var distance = (NodeXY node1,NodeXY node2) => (float)((NodeXY)node1).Distance((NodeXY)node2);
 

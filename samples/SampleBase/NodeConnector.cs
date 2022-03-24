@@ -3,7 +3,7 @@ using GraphSharp.Nodes;
 
 public class NodeConnector : EdgeBase<NodeXY>, IComparable<NodeConnector>
 {
-    public NodeConnector(NodeXY node, NodeXY parent) : base(node)
+    public NodeConnector(NodeXY parent,NodeXY node) : base(parent,node)
     {
         Parent = parent;
         if(node is NodeXY n1 && parent is NodeXY n2)
