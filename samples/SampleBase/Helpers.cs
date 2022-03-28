@@ -58,12 +58,12 @@ public static class Helpers
             drawer.Clear(Color.Black);
             drawer.DrawEdges(nodes.Nodes);
             drawer.DrawNodes(nodes.Nodes);
-            if (path?.Count > 0)
+            if (path is not null && path?.Count > 0)
             {
                 drawer.DrawPath(path,Color.Wheat);
             }
             System.Console.WriteLine("Saving image...");
-            image.SaveAsJpeg("example.jpg");
+            image.SaveAsJpeg(argz.filename);
         });
     }
     public static float ComputePathLength(IList<NodeXY> path,Func<NodeXY,NodeXY,float> distance){
