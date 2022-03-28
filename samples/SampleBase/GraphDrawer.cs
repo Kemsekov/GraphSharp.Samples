@@ -11,19 +11,15 @@ using System.Reflection;
 
 public class GraphDrawer
 {
-    public IBrush DrawNodeBrush;
-    public IBrush DrawLineBrush;
     public float Thickness;
     public float NodeSize;
     public Image<Rgba32> Image;
 
     public Font Font;
 
-    public GraphDrawer(Image<Rgba32> image, IBrush drawNodeBrush, IBrush drawLineBrush, float fontSize)
+    public GraphDrawer(Image<Rgba32> image, float fontSize)
     {
         Image = image;
-        DrawNodeBrush = drawNodeBrush;
-        DrawLineBrush = drawLineBrush;
         FontCollection fonts = new FontCollection();
 
         var assembly = Assembly.GetExecutingAssembly();
@@ -33,7 +29,7 @@ public class GraphDrawer
             fonts.Install(stream);
         }
 
-        var notoSans = fonts.CreateFont("Noto Sans", fontSize * image.Height , FontStyle.Regular);
+        var notoSans = fonts.CreateFont("Noto Sans", fontSize * image.Height, FontStyle.Regular);
 
         Font = notoSans;
     }
@@ -55,7 +51,7 @@ public class GraphDrawer
         });
         return Image;
     }
-    public Image<Rgba32> DrawNodeConnections(IList<NodeXY> nodes)
+    public Image<Rgba32> DrawEdges(IList<NodeXY> nodes)
     {
         Image.Mutate(x =>
         {
@@ -64,7 +60,7 @@ public class GraphDrawer
             {
                 foreach (var c in node.Edges)
                 {
-                    DrawConnection(x, node, c.Node, size);
+                    DrawEdge(x, c, size);
                 }
             });
 
@@ -72,47 +68,38 @@ public class GraphDrawer
         return Image;
     }
 
-    public Image<Rgba32> DrawPath(IList<NodeXY> path)
+    public Image<Rgba32> DrawPath(IList<NodeXY> path,Color color)
     {
-        Dictionary<(int,int),bool> drawn = new();
+        Dictionary<(int, int), bool> drawn = new();
         Image.Mutate(x =>
         {
             path.Aggregate((n1, n2) =>
             {
-                if(drawn.TryGetValue((n1.Id,n2.Id),out var _)) return n2;
-                DrawConnection(x, n1, n2, x.GetCurrentSize());
-                drawn[(n1.Id,n2.Id)] = true;
+                if (drawn.TryGetValue((n1.Id, n2.Id), out var _)) return n2;
+                DrawEdge(x,new NodeConnector(n1,n2){Color=color}, x.GetCurrentSize());
+                drawn[(n1.Id, n2.Id)] = true;
                 return n2;
             });
         });
         return Image;
     }
-    public void DrawNodeId(IImageProcessingContext x, NodeXY node, Size ImageSize)
+    public void DrawNodeId(IImageProcessingContext x, NodeXY nodeXY, Size ImageSize)
     {
-        if (node is NodeXY nodeXY)
-        {
-
-            var point = new PointF((float)nodeXY.X * ImageSize.Width, (float)nodeXY.Y * ImageSize.Height);
-            x.DrawText(node.Id.ToString(), Font, Color.Violet, point);
-        }
+        var point = new PointF((float)nodeXY.X * ImageSize.Width, (float)nodeXY.Y * ImageSize.Height);
+        x.DrawText(nodeXY.Id.ToString(), Font, Color.Violet, point);
     }
-    public void DrawNode(IImageProcessingContext x, NodeXY node, Size ImageSize, float nodeSize)
+    public void DrawNode(IImageProcessingContext x, NodeXY nodeXY, Size ImageSize, float nodeSize)
     {
-        if (node is NodeXY nodeXY)
-        {
-            var point = new PointF((float)nodeXY.X * ImageSize.Width, (float)nodeXY.Y * ImageSize.Height);
-            var ellipse = new EllipsePolygon(point, nodeSize * Image.Height);
-            x.FillPolygon(new DrawingOptions() { }, DrawNodeBrush, ellipse.Points.ToArray());
-        }
+        var brush = new SolidBrush(nodeXY.Color);
+        var point = new PointF((float)nodeXY.X * ImageSize.Width, (float)nodeXY.Y * ImageSize.Height);
+        var ellipse = new EllipsePolygon(point, nodeSize * Image.Height);
+        x.FillPolygon(new DrawingOptions() { }, brush, ellipse.Points.ToArray());
     }
-    public void DrawConnection(IImageProcessingContext x, NodeXY node1, NodeXY node2, Size ImageSize)
+    public void DrawEdge(IImageProcessingContext x, NodeConnector edge, Size ImageSize)
     {
-        if (node1 is NodeXY n1 && node2 is NodeXY n2)
-        {
-            var point1 = new PointF((float)n1.X * ImageSize.Width, (float)n1.Y * ImageSize.Height);
-            var point2 = new PointF((float)n2.X * ImageSize.Width, (float)n2.Y * ImageSize.Height);
-
-            x.DrawLines(new DrawingOptions() { }, DrawLineBrush, Thickness * ImageSize.Height, point1, point2);
-        }
+        var brush = new SolidBrush(edge.Color);
+        var point1 = new PointF((float)edge.Parent.X * ImageSize.Width, (float)edge.Parent.Y * ImageSize.Height);
+        var point2 = new PointF((float)edge.Node.X * ImageSize.Width, (float)edge.Node.Y * ImageSize.Height);
+        x.DrawLines(new DrawingOptions() { }, brush, Thickness * ImageSize.Height, point1, point2);
     }
 }

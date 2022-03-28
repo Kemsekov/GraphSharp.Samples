@@ -52,17 +52,15 @@ public static class Helpers
             System.Console.WriteLine("Creating image...");
 
             using var image = new Image<Rgba32>(argz.outputResolution, argz.outputResolution);
-            var drawer = new GraphDrawer(image, Brushes.Solid(Color.Brown), Brushes.Solid(Color.BlueViolet), argz.fontSize);
+            var drawer = new GraphDrawer(image, argz.fontSize);
             drawer.NodeSize = argz.nodeSize;
             drawer.Thickness = argz.thickness;
             drawer.Clear(Color.Black);
-            drawer.DrawNodeConnections(nodes.Nodes);
+            drawer.DrawEdges(nodes.Nodes);
             drawer.DrawNodes(nodes.Nodes);
-
             if (path?.Count > 0)
             {
-                drawer.DrawLineBrush = Brushes.Solid(Color.Wheat);
-                drawer.DrawPath(path);
+                drawer.DrawPath(path,Color.Wheat);
             }
             System.Console.WriteLine("Saving image...");
             image.SaveAsJpeg("example.jpg");
