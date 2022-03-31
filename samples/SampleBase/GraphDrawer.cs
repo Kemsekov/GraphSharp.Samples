@@ -83,6 +83,14 @@ public class GraphDrawer
         });
         return Image;
     }
+    public void DrawNodesId(IList<NodeXY> nodes){
+        Image.Mutate(x =>
+        {
+            Parallel.ForEach(nodes, node =>{
+                DrawNodeId(x,node,x.GetCurrentSize());
+            });
+        });
+    }
     public void DrawNodeId(IImageProcessingContext x, NodeXY nodeXY, Size ImageSize)
     {
         var point = new PointF((float)nodeXY.X * ImageSize.Width, (float)nodeXY.Y * ImageSize.Height);
