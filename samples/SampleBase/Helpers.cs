@@ -6,7 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using GraphSharp.GraphStructures;
-
+using GraphType = GraphSharp.GraphStructures.GraphStructureBase<NodeXY,NodeConnector>;
 public static class Helpers
 {
     public static void MeasureTime(Action operation)
@@ -45,7 +45,7 @@ public static class Helpers
             }
         }
     }
-    public static void CreateImage(IGraphStructure<NodeXY> nodes, IList<NodeXY>? path, ArgumentsHandler argz)
+    public static void CreateImage(ArgumentsHandler argz,Action<GraphDrawer> draw)
     {
         MeasureTime(() =>
         {
@@ -55,13 +55,7 @@ public static class Helpers
             var drawer = new GraphDrawer(image, argz.fontSize);
             drawer.NodeSize = argz.nodeSize;
             drawer.Thickness = argz.thickness;
-            drawer.Clear(Color.Black);
-            drawer.DrawEdges(nodes.Nodes);
-            drawer.DrawNodes(nodes.Nodes);
-            if (path is not null && path?.Count > 0)
-            {
-                drawer.DrawPath(path,Color.Wheat);
-            }
+            draw(drawer);
             System.Console.WriteLine("Saving image...");
             image.SaveAsJpeg(argz.filename);
         });
@@ -76,7 +70,7 @@ public static class Helpers
         }
         return res;
     }
-    public static IGraphStructure<NodeXY> CreateNodes(ArgumentsHandler argz)
+    public static GraphType CreateNodes(ArgumentsHandler argz)
     {
     GraphStructureOperation<NodeXY,NodeConnector>? result = default;
     MeasureTime(() =>
