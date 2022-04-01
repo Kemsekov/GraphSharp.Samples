@@ -6,12 +6,19 @@ var nodes = Helpers.CreateNodes(argz);
 
 var coloring = new Algorithm(nodes,new[]{Color.Azure,Color.Yellow,Color.Red,Color.Coral,Color.Blue,Color.Aqua,Color.Violet});
 
-while(!coloring.Done())
-    coloring.Propagate();
+Helpers.MeasureTime(()=>{
+    System.Console.WriteLine("Starting coloring graph...");
+    for(int i = 0;i<argz.steps;i++){
+        if(coloring.Done()){
+            System.Console.WriteLine($"Coloring done at {i} step");
+            return;
+        }
+        coloring.Propagate();
+    }
+    System.Console.WriteLine("Done all steps");
+});
 
 Helpers.EnsureRightColoring(nodes.Nodes);
-foreach(var c in coloring.UsedColors)
-    System.Console.WriteLine(c);
 
 System.Console.WriteLine($"Total colors used : {coloring.UsedColors.Count}");
 

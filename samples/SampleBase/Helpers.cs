@@ -91,29 +91,28 @@ public static class Helpers
     }
     public static GraphType CreateNodes(ArgumentsHandler argz)
     {
-    GraphStructureOperation<NodeXY,NodeConnector>? result = default;
-    MeasureTime(() =>
-    {
-        System.Console.WriteLine("Creating nodes...");
-        var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
-        var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
-
-        var createEdge = (NodeXY parent,NodeXY node) => new NodeConnector(parent,node);
-        var createNode = (int id) => new NodeXY(id, rand.NextDouble(), rand.NextDouble());
-        var distance = (NodeXY node1,NodeXY node2) => (float)((NodeXY)node1).Distance((NodeXY)node2);
-
-
-        result = new GraphStructure<NodeXY,NodeConnector>(createNode,createEdge)
+        GraphStructureOperation<NodeXY,NodeConnector>? result = default;
+        MeasureTime(() =>
         {
-            Distance = distance,
-            Rand = conRand,
-        }
-            .CreateNodes(argz.nodesCount)
-            .ForEach()
-            .ConnectToClosest(argz.minEdges, argz.maxEdges);
-        ShiftNodesToFitInTheImage(result.Nodes);
-        
-    });
-    return result ?? throw new Exception("Create node failure");;
-}
+            System.Console.WriteLine("Creating nodes...");
+            var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
+            var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
+    
+            var createEdge = (NodeXY parent,NodeXY node) => new NodeConnector(parent,node);
+            var createNode = (int id) => new NodeXY(id, rand.NextDouble(), rand.NextDouble());
+            var distance = (NodeXY node1,NodeXY node2) => (float)((NodeXY)node1).Distance((NodeXY)node2);
+    
+    
+            result = new GraphStructure<NodeXY,NodeConnector>(createNode,createEdge)
+            {
+                Distance = distance,
+                Rand = conRand,
+            }
+                .CreateNodes(argz.nodesCount)
+                .ForEach()
+                .ConnectToClosest(argz.minEdges, argz.maxEdges);
+            ShiftNodesToFitInTheImage(result.Nodes);
+        });
+        return result ?? throw new Exception("Create node failure");;
+    }
 }
