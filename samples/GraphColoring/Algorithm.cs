@@ -42,7 +42,6 @@ public class Algorithm : Visitor<NodeXY, NodeConnector>
         if(Done()) return;
         SetPosition(ChoosePositions());
     }
-
     public override bool Select(NodeConnector edge) => true;
     public override void Visit(NodeXY node)
     {
