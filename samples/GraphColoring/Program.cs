@@ -11,6 +11,9 @@ while(!coloring.Done())
 
 Helpers.EnsureRightColoring(nodes.Nodes);
 System.Console.WriteLine($"Total colors used : {coloring.UsedColors.Count}");
+foreach(var c in coloring.UsedColors)
+    System.Console.WriteLine(c);
+
 Helpers.CreateImage(argz,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdges(nodes.Nodes);

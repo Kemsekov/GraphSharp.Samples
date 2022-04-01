@@ -14,14 +14,14 @@ public class Algorithm : Visitor<NodeXY, NodeConnector>
     /// <summary>
     /// List of used colors
     /// </summary>
-    public SortedSet<Color> UsedColors {get;}
+    public HashSet<Color> UsedColors {get;}
     IList<Color> Colors { get; }
     int edgesCount = 0;
     IList<NodeXY> Nodes;
     Color _emptyColor;
     public Algorithm(GraphStructureBase<NodeXY,NodeConnector> nodes,IEnumerable<Color> colors)
     {
-        UsedColors = new(new ColorComparer());
+        UsedColors = new();
         Colors = colors.ToList();
         _emptyColor = colors.First();
         Propagator = new Propagator<NodeXY, NodeConnector>(this);
