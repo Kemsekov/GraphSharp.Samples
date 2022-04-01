@@ -32,6 +32,25 @@ public static class Helpers
                 throw new Exception("Path is not valid!");
         }
     }
+    public static void EnsureRightColoring(IList<NodeXY> nodes){
+        foreach(var n in nodes){
+            var color = n.Color;
+            if(n.Edges.Any(x=>x.Node.Color==color)){
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Wrong graph coloring! {n} with color {n.Color} have edge with the same color!");               
+                Console.ResetColor();
+                return;
+            }
+        }
+    }
+    public static void ShiftNodesToFitInTheImage(IList<NodeXY> nodes){
+        foreach(var n in nodes){
+            n.X*=0.9;
+            n.Y*=0.9;
+            n.X+=0.05;
+            n.Y+=0.05;
+        }
+    }
     public static void PrintPath(IList<NodeXY> path)
     {
         System.Console.WriteLine("---Path");
@@ -92,6 +111,8 @@ public static class Helpers
             .CreateNodes(argz.nodesCount)
             .ForEach()
             .ConnectToClosest(argz.minEdges, argz.maxEdges);
+        ShiftNodesToFitInTheImage(result.Nodes);
+        
     });
     return result ?? throw new Exception("Create node failure");;
 }
