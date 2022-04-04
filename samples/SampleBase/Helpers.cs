@@ -93,7 +93,7 @@ public static class Helpers
     }
     public static GraphType CreateNodes(ArgumentsHandler argz)
     {
-        GraphStructureOperation<NodeXY,NodeConnector>? result = default;
+        GraphStructure<NodeXY,NodeConnector>? result = default;
         MeasureTime(() =>
         {
             System.Console.WriteLine("Creating nodes...");
@@ -106,8 +106,8 @@ public static class Helpers
             };
     
             result = new GraphStructure<NodeXY,NodeConnector>(config)
-                .CreateNodes(argz.nodesCount)
-                .ForEach()
+                .CreateNodes(argz.nodesCount);
+            result.ForEach()
                 .ConnectToClosest(argz.minEdges, argz.maxEdges);
             ShiftNodesToFitInTheImage(result.Nodes);
         });
