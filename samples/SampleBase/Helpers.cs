@@ -7,6 +7,8 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using GraphSharp.GraphStructures;
 using GraphType = GraphSharp.GraphStructures.GraphStructureBase<NodeXY,NodeConnector>;
+using SampleBase;
+
 public static class Helpers
 {
     public static void MeasureTime(Action operation)
@@ -97,17 +99,13 @@ public static class Helpers
             System.Console.WriteLine("Creating nodes...");
             var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
             var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
+
+            var config = new SampleGraphConfiguration(){
+                CreateNodesRand = rand,
+                CreateEdgesRand = conRand
+            };
     
-            var createEdge = (NodeXY parent,NodeXY node) => new NodeConnector(parent,node);
-            var createNode = (int id) => new NodeXY(id, rand.NextDouble(), rand.NextDouble());
-            var distance = (NodeXY node1,NodeXY node2) => (float)((NodeXY)node1).Distance((NodeXY)node2);
-    
-    
-            result = new GraphStructure<NodeXY,NodeConnector>(createNode,createEdge)
-            {
-                Distance = distance,
-                Rand = conRand,
-            }
+            result = new GraphStructure<NodeXY,NodeConnector>(config)
                 .CreateNodes(argz.nodesCount)
                 .ForEach()
                 .ConnectToClosest(argz.minEdges, argz.maxEdges);
