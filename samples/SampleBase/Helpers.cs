@@ -6,6 +6,8 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using GraphSharp.GraphStructures;
+using GraphType = GraphSharp.GraphStructures.GraphStructureBase<NodeXY,NodeConnector>;
+using SampleBase;
 
 public static class Helpers
 {
@@ -32,6 +34,25 @@ public static class Helpers
                 throw new Exception("Path is not valid!");
         }
     }
+    public static void EnsureRightColoring(IList<NodeXY> nodes){
+        foreach(var n in nodes){
+            var color = n.Color;
+            if(n.Edges.Any(x=>x.Node.Color==color)){
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Wrong graph coloring! {n} with color {n.Color} have edge with the same color!");               
+                Console.ResetColor();
+                return;
+            }
+        }
+    }
+    public static void ShiftNodesToFitInTheImage(IList<NodeXY> nodes){
+        foreach(var n in nodes){
+            n.X*=0.9;
+            n.Y*=0.9;
+            n.X+=0.05;
+            n.Y+=0.05;
+        }
+    }
     public static void PrintPath(IList<NodeXY> path)
     {
         System.Console.WriteLine("---Path");
@@ -45,7 +66,7 @@ public static class Helpers
             }
         }
     }
-    public static void CreateImage(IGraphStructure<NodeXY> nodes, IList<NodeXY>? path, ArgumentsHandler argz)
+    public static void CreateImage(ArgumentsHandler argz,Action<GraphDrawer> draw)
     {
         MeasureTime(() =>
         {
@@ -55,15 +76,9 @@ public static class Helpers
             var drawer = new GraphDrawer(image, argz.fontSize);
             drawer.NodeSize = argz.nodeSize;
             drawer.Thickness = argz.thickness;
-            drawer.Clear(Color.Black);
-            drawer.DrawEdges(nodes.Nodes);
-            drawer.DrawNodes(nodes.Nodes);
-            if (path?.Count > 0)
-            {
-                drawer.DrawPath(path,Color.Wheat);
-            }
+            draw(drawer);
             System.Console.WriteLine("Saving image...");
-            image.SaveAsJpeg("example.jpg");
+            image.SaveAsJpeg(argz.filename);
         });
     }
     public static float ComputePathLength(IList<NodeXY> path,Func<NodeXY,NodeXY,float> distance){
@@ -76,29 +91,26 @@ public static class Helpers
         }
         return res;
     }
-    public static IGraphStructure<NodeXY> CreateNodes(ArgumentsHandler argz)
+    public static GraphType CreateNodes(ArgumentsHandler argz)
     {
-    GraphStructureOperation<NodeXY,NodeConnector>? result = default;
-    MeasureTime(() =>
-    {
-        System.Console.WriteLine("Creating nodes...");
-        var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
-        var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
-
-        var createEdge = (NodeXY parent,NodeXY node) => new NodeConnector(parent,node);
-        var createNode = (int id) => new NodeXY(id, rand.NextDouble(), rand.NextDouble());
-        var distance = (NodeXY node1,NodeXY node2) => (float)((NodeXY)node1).Distance((NodeXY)node2);
-
-
-        result = new GraphStructure<NodeXY,NodeConnector>(createNode,createEdge)
+        GraphStructureOperation<NodeXY,NodeConnector>? result = default;
+        MeasureTime(() =>
         {
-            Distance = distance,
-            Rand = conRand,
-        }
-            .CreateNodes(argz.nodesCount)
-            .ForEach()
-            .ConnectToClosest(argz.minEdges, argz.maxEdges);
-    });
-    return result ?? throw new Exception("Create node failure");;
-}
+            System.Console.WriteLine("Creating nodes...");
+            var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
+            var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
+
+            var config = new SampleGraphConfiguration(){
+                CreateNodesRand = rand,
+                CreateEdgesRand = conRand
+            };
+    
+            result = new GraphStructure<NodeXY,NodeConnector>(config)
+                .CreateNodes(argz.nodesCount)
+                .ForEach()
+                .ConnectToClosest(argz.minEdges, argz.maxEdges);
+            ShiftNodesToFitInTheImage(result.Nodes);
+        });
+        return result ?? throw new Exception("Create node failure");;
+    }
 }

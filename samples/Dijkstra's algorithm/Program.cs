@@ -1,5 +1,6 @@
 ﻿using GraphSharp;
 using GraphSharp.GraphStructures;
+using SixLabors.ImageSharp;
 //this program showing how to find the shortest path betwen two nodes
 //by summing and comparing sum of visited path
 
@@ -27,7 +28,15 @@ System.Console.WriteLine($"---Path length from sum of path nodes distances {comp
 System.Console.WriteLine($"---Path length {pathLength}");
 System.Console.WriteLine($"---Path nodes visited {path.Count}");
 
-Helpers.CreateImage(nodes, path, argz);
+Helpers.CreateImage(argz,drawer=>{
+    drawer.Clear(Color.Black);
+    drawer.DrawEdges(nodes.Nodes);
+    drawer.DrawNodes(nodes.Nodes);
+    if (path?.Count > 0)
+    {
+        drawer.DrawPath(path,Color.Wheat);
+    }
+});
 
 void FindPath(NodeXY startNode, NodeXY endNode, Algorithm algorithm)
 {

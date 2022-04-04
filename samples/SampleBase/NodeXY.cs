@@ -9,8 +9,9 @@ public class NodeXY : NodeBase<NodeConnector>
         X = x;
         Y = y;
     }
-    public double X{get;init;}
-    public double Y{get;init;}
+    public double X{get;set;}
+    public double Y{get;set;}
+    public float Weight{get;set;}
     public SixLabors.ImageSharp.Color Color{get;set;} = SixLabors.ImageSharp.Color.Brown;
     public double Distance(NodeXY other){
         return Math.Sqrt((X-other.X)*(X-other.X)+(Y-other.Y)*(Y-other.Y));

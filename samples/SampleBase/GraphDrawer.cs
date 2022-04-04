@@ -13,6 +13,7 @@ public class GraphDrawer
 {
     public float Thickness;
     public float NodeSize;
+    public float DirectionLength = 0.4f;
     public Image<Rgba32> Image;
 
     public Font Font;
@@ -46,8 +47,6 @@ public class GraphDrawer
 
             Parallel.ForEach(nodes, node =>
                 DrawNode(x, node, size, NodeSize));
-            Parallel.ForEach(nodes, node =>
-                DrawNodeId(x, node, size));
         });
         return Image;
     }
@@ -83,6 +82,22 @@ public class GraphDrawer
         });
         return Image;
     }
+    public void DrawNodesId(IList<NodeXY> nodes){
+        Image.Mutate(x =>
+        {
+            Parallel.ForEach(nodes, node =>{
+                DrawNodeId(x,node,x.GetCurrentSize());
+            });
+        });
+    }
+    public void DrawDirections(IList<NodeXY> nodes){
+        Image.Mutate(x=>{
+            Parallel.ForEach(nodes,node=>{
+                foreach(var e in node.Edges)
+                    DrawDirection(x,e,x.GetCurrentSize());
+            });
+        });
+    }
     public void DrawNodeId(IImageProcessingContext x, NodeXY nodeXY, Size ImageSize)
     {
         var point = new PointF((float)nodeXY.X * ImageSize.Width, (float)nodeXY.Y * ImageSize.Height);
@@ -101,5 +116,23 @@ public class GraphDrawer
         var point1 = new PointF((float)edge.Parent.X * ImageSize.Width, (float)edge.Parent.Y * ImageSize.Height);
         var point2 = new PointF((float)edge.Node.X * ImageSize.Width, (float)edge.Node.Y * ImageSize.Height);
         x.DrawLines(new DrawingOptions() { }, brush, Thickness * ImageSize.Height, point1, point2);
+    }
+    float Distance(PointF f){
+        return MathF.Sqrt(f.X*f.X+f.Y*f.Y);
+    }
+    public void DrawDirection(IImageProcessingContext x, NodeConnector edge, Size ImageSize){
+        var brush = new SolidBrush(edge.DirectionColor);
+        var point1 = new PointF((float)edge.Parent.X * ImageSize.Width, (float)edge.Parent.Y * ImageSize.Height);
+        var point2 = new PointF((float)edge.Node.X * ImageSize.Width, (float)edge.Node.Y * ImageSize.Height);
+        var dirVector = point1-point2;
+        var distance = Distance(dirVector);
+        dirVector/=distance;
+        dirVector.X*=ImageSize.Width;
+        dirVector.Y*=ImageSize.Height;
+        var point3=point2+dirVector*(DirectionLength);
+        if(Distance(point2-point3)<distance)
+            x.DrawLines(new DrawingOptions() { }, brush, Thickness * ImageSize.Height, point2, point3);
+        else
+            x.DrawLines(new DrawingOptions() { }, brush, Thickness * ImageSize.Height, point1, point2+(point1-point2)/2);
     }
 }
