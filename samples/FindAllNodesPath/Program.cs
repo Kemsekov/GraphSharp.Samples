@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 ArgumentsHandler argz = new("settings.json");
 
-var nodes = Helpers.CreateNodes(argz);
+var nodes = Helpers.CreateGraph(argz);
 var startNode = nodes.Nodes[argz.node1 % nodes.Nodes.Count];
 
 var algorithm = new Algorithm(argz.nodesCount);

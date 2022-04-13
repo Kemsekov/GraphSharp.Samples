@@ -2,7 +2,7 @@
 
 ArgumentsHandler argz = new("settings.json");
 
-// var nodes = Helpers.CreateNodes(argz);
+// var nodes = Helpers.CreateGraph(argz);
 // Helpers.SaveGraph(nodes,"nodes.json");
 
 var nodes = Helpers.LoadGraph("nodes.json");

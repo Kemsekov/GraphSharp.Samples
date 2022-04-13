@@ -94,7 +94,7 @@ public static class Helpers
         }
         return res;
     }
-    public static GraphType CreateNodes(ArgumentsHandler argz)
+    public static GraphType CreateGraph(ArgumentsHandler argz)
     {
         GraphStructure<NodeXY,NodeConnector>? result = default;
         MeasureTime(() =>
