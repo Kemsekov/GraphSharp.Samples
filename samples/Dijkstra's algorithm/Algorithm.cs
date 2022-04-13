@@ -35,7 +35,7 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
         {
             var pathLength = _pathLength[connection.Parent] + connection.Weight;
 
-            if (_pathLength.TryGetValue(connection.Node, out double pathSoFar))
+            if (_pathLength.TryGetValue(connection.Child, out double pathSoFar))
             {
                 if (pathSoFar <= pathLength)
                 {
@@ -44,8 +44,8 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
             }
             if (updatePath)
             {
-                _pathLength[connection.Node] = pathLength;
-                _path[connection.Node] = connection.Parent;
+                _pathLength[connection.Child] = pathLength;
+                _path[connection.Child] = connection.Parent;
             }
         }
         return true;

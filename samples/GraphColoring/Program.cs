@@ -2,8 +2,9 @@
 
 ArgumentsHandler argz = new("settings.json");
 
-var nodes = Helpers.CreateNodes(argz);
-
+// var nodes = Helpers.CreateNodes(argz);
+// Helpers.WriteToFile("nodes.json",nodes);
+var nodes = Helpers.ReadFromFile("nodes.json");
 var coloring = new Algorithm(nodes,new[]{Color.Azure,Color.Yellow,Color.Red,Color.Coral,Color.Blue,Color.Aqua,Color.Violet});
 
 Helpers.MeasureTime(()=>{

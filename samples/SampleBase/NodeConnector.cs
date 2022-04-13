@@ -1,6 +1,9 @@
 using GraphSharp.Edges;
 using GraphSharp.Nodes;
 
+/// <summary>
+/// Edge class for the NodeXY class.
+/// </summary>
 public class NodeConnector : EdgeBase<NodeXY>, IComparable<NodeConnector>
 {
     public NodeConnector(NodeXY parent,NodeXY node) : base(parent,node)
@@ -14,6 +17,6 @@ public class NodeConnector : EdgeBase<NodeXY>, IComparable<NodeConnector>
     public int CompareTo(NodeConnector? other)
     {
         if(other is null) return -1;
-        return Node.Id-other.Node.Id;        
+        return Child.Id-other.Child.Id;        
     }
 }

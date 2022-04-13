@@ -7,7 +7,10 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using GraphSharp.GraphStructures;
 using GraphType = GraphSharp.GraphStructures.GraphStructureBase<NodeXY,NodeConnector>;
+using Newtonsoft.Json;
 using SampleBase;
+using System.Text;
+using GraphSharp.Models;
 
 public static class Helpers
 {
@@ -30,14 +33,14 @@ public static class Helpers
         {
             var current = path[i];
             var next = path[i + 1];
-            if (!current.Edges.Select(x => x.Node.Id).Contains(next.Id))
+            if (!current.Edges.Select(x => x.Child.Id).Contains(next.Id))
                 throw new Exception("Path is not valid!");
         }
     }
     public static void EnsureRightColoring(IList<NodeXY> nodes){
         foreach(var n in nodes){
             var color = n.Color;
-            if(n.Edges.Any(x=>x.Node.Color==color)){
+            if(n.Edges.Any(x=>x.Child.Color==color)){
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Wrong graph coloring! {n} with color {n.Color} have edge with the same color!");               
                 Console.ResetColor();
@@ -62,7 +65,7 @@ public static class Helpers
             foreach (var c in n.Edges)
             {
                 if (c is NodeConnector con)
-                    System.Console.WriteLine($"\t{con.Node} {(float)con.Weight}");
+                    System.Console.WriteLine($"\t{con.Child} {(float)con.Weight}");
             }
         }
     }

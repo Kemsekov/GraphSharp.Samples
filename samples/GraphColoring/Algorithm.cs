@@ -52,7 +52,7 @@ public class Algorithm : Visitor<NodeXY, NodeConnector>
     }
     public bool Done()=>edgesCount==-1;
     Color ChooseColor(NodeXY node){
-        var colors = node.Edges.Select(x=>x.Node.Color).Distinct();
+        var colors = node.Edges.Select(x=>x.Child.Color).Distinct();
         var color = Colors.Except(colors).FirstOrDefault();
         if(color == default){
             color = Color.FromRgb((byte)Random.Shared.Next(),(byte)Random.Shared.Next(),(byte)Random.Shared.Next());

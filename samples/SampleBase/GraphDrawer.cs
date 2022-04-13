@@ -1,5 +1,3 @@
-
-// using System.Drawing;
 using GraphSharp.Nodes;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
@@ -9,15 +7,16 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.Fonts;
 using System.Reflection;
 
+/// <summary>
+/// Class for drawing graphs.
+/// </summary>
 public class GraphDrawer
 {
     public float Thickness;
     public float NodeSize;
     public float DirectionLength = 0.4f;
     public Image<Rgba32> Image;
-
     public Font Font;
-
     public GraphDrawer(Image<Rgba32> image, float fontSize)
     {
         Image = image;
@@ -114,7 +113,7 @@ public class GraphDrawer
     {
         var brush = new SolidBrush(edge.Color);
         var point1 = new PointF((float)edge.Parent.X * ImageSize.Width, (float)edge.Parent.Y * ImageSize.Height);
-        var point2 = new PointF((float)edge.Node.X * ImageSize.Width, (float)edge.Node.Y * ImageSize.Height);
+        var point2 = new PointF((float)edge.Child.X * ImageSize.Width, (float)edge.Child.Y * ImageSize.Height);
         x.DrawLines(new DrawingOptions() { }, brush, Thickness * ImageSize.Height, point1, point2);
     }
     float Distance(PointF f){
@@ -123,7 +122,7 @@ public class GraphDrawer
     public void DrawDirection(IImageProcessingContext x, NodeConnector edge, Size ImageSize){
         var brush = new SolidBrush(edge.DirectionColor);
         var point1 = new PointF((float)edge.Parent.X * ImageSize.Width, (float)edge.Parent.Y * ImageSize.Height);
-        var point2 = new PointF((float)edge.Node.X * ImageSize.Width, (float)edge.Node.Y * ImageSize.Height);
+        var point2 = new PointF((float)edge.Child.X * ImageSize.Width, (float)edge.Child.Y * ImageSize.Height);
         var dirVector = point1-point2;
         var distance = Distance(dirVector);
         dirVector/=distance;

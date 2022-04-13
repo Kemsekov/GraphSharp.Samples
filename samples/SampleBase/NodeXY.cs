@@ -2,6 +2,9 @@ using System;
 using GraphSharp.Edges;
 using GraphSharp.Nodes;
 
+/// <summary>
+/// Edge class for the NodeXY class.
+/// </summary>
 public class NodeXY : NodeBase<NodeConnector>
 {
     public NodeXY(int id, double x, double y) : base(id)
