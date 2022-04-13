@@ -19,7 +19,7 @@ namespace SampleBase
 
         public NodeXY CreateNode(int nodeId)
         {
-            return new NodeXY(nodeId,CreateNodesRand.NextDouble(),CreateNodesRand.NextDouble());
+            return new NodeXY(nodeId,CreateNodesRand.NextSingle(),CreateNodesRand.NextSingle());
         }
 
         public float Distance(NodeXY n1, NodeXY n2)

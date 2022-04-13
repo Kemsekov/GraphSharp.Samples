@@ -30,7 +30,7 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
 
     public override bool Select(NodeConnector edge)
     {
-        var n = edge.Node;
+        var n = edge.Child;
         return Path.Count==0 || n.Id==Path.Last().Id;
     }
     public override void Visit(NodeXY node)
@@ -39,9 +39,9 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
 
         _visited[node.Id] = 1;
         foreach(var n in node.Edges){
-            if(_visited[n.Node.Id]==0){
-                _trace[n.Node] = node;
-                Path.Add(n.Node);
+            if(_visited[n.Child.Id]==0){
+                _trace[n.Child] = node;
+                Path.Add(n.Child);
                 return;
             }
         }

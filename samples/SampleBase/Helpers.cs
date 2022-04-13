@@ -50,10 +50,10 @@ public static class Helpers
     }
     public static void ShiftNodesToFitInTheImage(IList<NodeXY> nodes){
         foreach(var n in nodes){
-            n.X*=0.9;
-            n.Y*=0.9;
-            n.X+=0.05;
-            n.Y+=0.05;
+            n.X*=0.9f;
+            n.Y*=0.9f;
+            n.X+=0.05f;
+            n.Y+=0.05f;
         }
     }
     public static void PrintPath(IList<NodeXY> path)
@@ -116,4 +116,79 @@ public static class Helpers
         });
         return result ?? throw new Exception("Create node failure");;
     }
+
+    /// <summary>
+    /// Save graph to json file
+    /// </summary>
+    public static void SaveGraph(GraphType graph,string filename)
+    {
+        MeasureTime(() =>
+        {
+            System.Console.WriteLine("Saving graph...");
+            var edges = graph.Nodes.SelectMany(
+                x=>x.Edges.Select(
+                    e=>new{
+                        ParentId=x.Id,
+                        ChildId=e.Child.Id,
+                        Weight=e.Weight,
+                        Color=e.Color.ToString()
+                    }));
+            var nodes = graph.Nodes.Select(x=>new{
+                Id=x.Id,
+                X=x.X,
+                Y=x.Y,
+                Weight = x.Weight,
+                Color=x.Color.ToString()
+            });
+            var to_save = new {
+                Nodes=nodes,
+                Edges=edges
+            };
+            var json = JsonConvert.SerializeObject(to_save, Formatting.Indented);
+            System.IO.File.WriteAllText(filename, json);
+        });
+    }
+
+    //Load graph from json file
+    public static GraphType LoadGraph(string filename)
+    {
+        #pragma warning disable
+        GraphType? result = default;
+        MeasureTime(() =>
+        {
+            System.Console.WriteLine("Loading graph...");
+            var json = System.IO.File.ReadAllText(filename);
+            var loaded = JsonConvert.DeserializeObject<dynamic>(json);
+            var nodes = (loaded.Nodes as IEnumerable<dynamic>).Select(
+                x=> {
+                    int id = x.Id;
+                    float _x = x.X;
+                    float _y = x.Y;
+                    string color = x.Color;
+                    return new NodeXY(id,_x,_y){Color=Color.Parse(color),Weight=x.Weight};
+                }
+            ).ToList();
+            var edges = (loaded.Edges as IEnumerable<dynamic>).Select(
+                x=>{ 
+                    int parentId = x.ParentId;
+                    int childId = x.ChildId;
+                    float weight = x.Weight;
+                    string color = x.Color;
+                    NodeXY parent = nodes.First(n=>n.Id==parentId);
+                    NodeXY child = nodes.First(n=>n.Id==childId);
+                    return new NodeConnector(parent,child){Weight=weight,Color=Color.Parse(color)};
+                }
+            );
+            //TODO: check if graph is valid
+            var res = new GraphStructure<NodeXY,NodeConnector>(new SampleGraphConfiguration());
+            res.UseNodes(nodes);
+            foreach(var e in edges){
+                res.Nodes[e.Parent.Id].Edges.Add(e);
+            }
+            result = res;
+        });
+        return result ?? throw new ApplicationException("Could not load graph");
+        #pragma warning enable
+    }
+
 }
