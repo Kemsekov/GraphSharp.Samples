@@ -174,8 +174,8 @@ public static class Helpers
                     int childId = x.ChildId;
                     float weight = x.Weight;
                     string color = x.Color;
-                    NodeXY parent = nodes.First(n=>n.Id==parentId);
-                    NodeXY child = nodes.First(n=>n.Id==childId);
+                    NodeXY parent = nodes[parentId];
+                    NodeXY child = nodes[childId];
                     return new NodeConnector(parent,child){Weight=weight,Color=Color.Parse(color)};
                 }
             );
