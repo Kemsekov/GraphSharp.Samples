@@ -79,6 +79,7 @@ public static class Helpers
             var drawer = new GraphDrawer(image, argz.fontSize);
             drawer.NodeSize = argz.nodeSize;
             drawer.Thickness = argz.thickness;
+            drawer.DirectionLength = argz.directionLength;
             draw(drawer);
             System.Console.WriteLine("Saving image...");
             image.SaveAsJpeg(argz.filename);

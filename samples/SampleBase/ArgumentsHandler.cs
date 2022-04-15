@@ -15,6 +15,7 @@ public class ArgumentsHandler
     public float nodeSize = 0.015f;
     public float fontSize = 0.012f;
     public string filename = "example.jpg";
+    public float directionLength = 0.01f;
     public ArgumentsHandler(string settingsFile)
     {
         dynamic paramz = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(settingsFile)) ?? new object();
@@ -31,5 +32,6 @@ public class ArgumentsHandler
         outputResolution = paramz.outputResolution ?? 4000;
         fontSize = paramz.fontSize ?? 0.001;
         filename = paramz.filename ?? "example.jpg";
+        directionLength = paramz.directionLength ?? 0.01f;
     }
 }

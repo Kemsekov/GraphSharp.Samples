@@ -17,8 +17,10 @@ public class GraphDrawer
     public float DirectionLength = 0.4f;
     public Image<Rgba32> Image;
     public Font Font;
+    float _fontSize;
     public GraphDrawer(Image<Rgba32> image, float fontSize)
     {
+        this._fontSize = fontSize;
         Image = image;
         FontCollection fonts = new FontCollection();
 
@@ -99,8 +101,8 @@ public class GraphDrawer
     }
     public void DrawNodeId(IImageProcessingContext x, NodeXY nodeXY, Size ImageSize)
     {
-        var point = new PointF((float)nodeXY.X * ImageSize.Width, (float)nodeXY.Y * ImageSize.Height);
-        x.DrawText(nodeXY.Id.ToString(), Font, Color.Violet, point);
+        var point = new PointF((float)(nodeXY.X-_fontSize/2) * ImageSize.Width, (float)(nodeXY.Y-_fontSize/2) * ImageSize.Height);
+        x.DrawText(nodeXY.Id.ToString(), Font, nodeXY.Color, point);
     }
     public void DrawNode(IImageProcessingContext x, NodeXY nodeXY, Size ImageSize, float nodeSize)
     {
