@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphSharp.GraphStructures.Interfaces;
@@ -27,9 +28,19 @@ namespace SampleBase
             return (float)n1.Distance(n2);
         }
 
+        public Color GetEdgeColor(NodeConnector edge)
+        {
+            return edge.Color.ToSystemDrawingColor();
+        }
+
         public float GetEdgeWeight(NodeConnector edge)
         {
             return edge.Weight;
+        }
+
+        public Color GetNodeColor(NodeXY node)
+        {
+            return node.Color.ToSystemDrawingColor();
         }
 
         public float GetNodeWeight(NodeXY node)
@@ -37,9 +48,19 @@ namespace SampleBase
             return node.Weight;
         }
 
+        public void SetEdgeColor(NodeConnector edge, Color color)
+        {
+            edge.Color = color.ToImageSharpColor();
+        }
+
         public void SetEdgeWeight(NodeConnector edge, float weight)
         {
             edge.Weight = weight;
+        }
+
+        public void SetNodeColor(NodeXY node, Color color)
+        {
+            node.Color = color.ToImageSharpColor();
         }
 
         public void SetNodeWeight(NodeXY node, float weight)
