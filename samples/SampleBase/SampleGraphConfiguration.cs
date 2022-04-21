@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
-using GraphSharp.GraphStructures.Interfaces;
-
+using GraphSharp.GraphStructures;
 namespace SampleBase
 {
     public class SampleGraphConfiguration : IGraphConfiguration<NodeXY, NodeConnector>
@@ -43,6 +43,11 @@ namespace SampleBase
             return node.Color.ToSystemDrawingColor();
         }
 
+        public Vector2 GetNodePosition(NodeXY node)
+        {
+            throw new NotImplementedException();
+        }
+
         public float GetNodeWeight(NodeXY node)
         {
             return node.Weight;
@@ -61,6 +66,12 @@ namespace SampleBase
         public void SetNodeColor(NodeXY node, Color color)
         {
             node.Color = color.ToImageSharpColor();
+        }
+
+        public void SetNodePosition(NodeXY node, Vector2 position)
+        {
+            node.X = position.X;
+            node.Y = position.Y;
         }
 
         public void SetNodeWeight(NodeXY node, float weight)

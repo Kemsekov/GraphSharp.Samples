@@ -3,9 +3,9 @@
 ArgumentsHandler argz = new("settings.json");
 
 // var nodes = Helpers.CreateGraph(argz);
-// Helpers.SaveGraph(nodes,"nodes.json");
+// Helpers.SaveGraph(nodes,"graph.json");
 
-var nodes = Helpers.LoadGraph("nodes.json");
+var nodes = Helpers.LoadGraph("graph.json");
 
 var coloring = new Algorithm(nodes,new[]{Color.Azure,Color.Yellow,Color.Red,Color.Coral,Color.Blue,Color.Aqua,Color.Violet});
 
