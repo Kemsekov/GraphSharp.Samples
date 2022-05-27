@@ -17,8 +17,4 @@ new[]{
     (16,new[]{17})
 };
 
-var argz = new ArgumentsHandler("settings.json");
-var graph = new GraphStructure<NodeXY,NodeConnector>(new SampleBase.SampleGraphConfiguration());
-graph.Converter.FromConnectionsList(TestConnectionsList);
-
 //TODO: Implement the rest of the code

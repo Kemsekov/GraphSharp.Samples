@@ -1,6 +1,7 @@
 
 using System.Collections.Concurrent;
 using GraphSharp.Edges;
+using GraphSharp.GraphStructures;
 using GraphSharp.Nodes;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
@@ -15,11 +16,13 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
     /// </summary>
     IDictionary<NodeXY,NodeXY> _trace = new ConcurrentDictionary<NodeXY,NodeXY>();
 
-    public override IPropagator<NodeXY> Propagator{get;}
+    public IGraphStructure<NodeXY, NodeConnector> Graph { get; }
+    public override IPropagator<NodeXY,NodeConnector> Propagator{get;}
 
-    public Algorithm(int nodesCount)
+    public Algorithm(IGraphStructure<NodeXY,NodeConnector> graph,int nodesCount)
     {
-        Propagator = new ParallelPropagator<NodeXY,NodeConnector>(this);
+        Graph = graph;
+        Propagator = new ParallelPropagator<NodeXY,NodeConnector>(this,graph);
         _visited = new byte[nodesCount];
         Path = new List<NodeXY>(nodesCount);
     }
@@ -30,7 +33,7 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
 
     public override bool Select(NodeConnector edge)
     {
-        var n = edge.Child;
+        var n = edge.Target;
         return Path.Count==0 || n.Id==Path.Last().Id;
     }
     public override void Visit(NodeXY node)
@@ -38,10 +41,10 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
         if(PathDone) return;
 
         _visited[node.Id] = 1;
-        foreach(var n in node.Edges){
-            if(_visited[n.Child.Id]==0){
-                _trace[n.Child] = node;
-                Path.Add(n.Child);
+        foreach(var n in Graph.Edges[node.Id]){
+            if(_visited[n.Target.Id]==0){
+                _trace[n.Target] = node;
+                Path.Add(n.Target);
                 return;
             }
         }

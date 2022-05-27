@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using GraphSharp.Edges;
+using GraphSharp.GraphStructures;
 using GraphSharp.Nodes;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
@@ -15,14 +16,14 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
     IDictionary<NodeXY, double> _pathLength = new ConcurrentDictionary<NodeXY, double>();
     NodeXY _startNode;
 
-    public override IPropagator<NodeXY> Propagator{get;}
+    public override IPropagator<NodeXY,NodeConnector> Propagator{get;}
 
     /// <param name="startNode">Node from which we need to find a shortest path</param>
-    public Algorithm(NodeXY startNode)
+    public Algorithm(NodeXY startNode, IGraphStructure<NodeXY,NodeConnector> graph)
     {
         this._startNode = startNode;
         _pathLength[startNode] = 0;
-        Propagator = new ParallelPropagator<NodeXY,NodeConnector>(this);
+        Propagator = new ParallelPropagator<NodeXY,NodeConnector>(this,graph);
     }
     public override void EndVisit()
     {
@@ -33,9 +34,9 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
         bool updatePath = true;
         if (Edge is NodeConnector connection)
         {
-            var pathLength = _pathLength[connection.Parent] + connection.Weight;
+            var pathLength = _pathLength[connection.Source] + connection.Weight;
 
-            if (_pathLength.TryGetValue(connection.Child, out double pathSoFar))
+            if (_pathLength.TryGetValue(connection.Target, out double pathSoFar))
             {
                 if (pathSoFar <= pathLength)
                 {
@@ -44,8 +45,8 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
             }
             if (updatePath)
             {
-                _pathLength[connection.Child] = pathLength;
-                _path[connection.Child] = connection.Parent;
+                _pathLength[connection.Target] = pathLength;
+                _path[connection.Target] = connection.Source;
             }
         }
         return true;
