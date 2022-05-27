@@ -4,3 +4,4 @@
 **/*.txt
 **/*.jpg
 **/.vscode
+**/graph.json

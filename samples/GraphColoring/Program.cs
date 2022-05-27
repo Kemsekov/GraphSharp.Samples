@@ -1,13 +1,14 @@
-﻿using SixLabors.ImageSharp;
+﻿
+using System.Drawing;
 
 ArgumentsHandler argz = new("settings.json");
 
-// var nodes = Helpers.CreateGraph(argz);
-// Helpers.SaveGraph(nodes,"nodes.json");
+var graph = Helpers.CreateGraph(argz);
+// Helpers.SaveGraph(nodes,"graph.json");
 
-var nodes = Helpers.LoadGraph("nodes.json");
+// var graph = Helpers.LoadGraph("graph.json");
 
-var coloring = new Algorithm(nodes,new[]{Color.Azure,Color.Yellow,Color.Red,Color.Coral,Color.Blue,Color.Aqua,Color.Violet});
+var coloring = new Algorithm(graph,new[]{Color.Azure,Color.Yellow,Color.Red,Color.Coral,Color.Blue,Color.Aqua,Color.Violet});
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Starting coloring graph...");
@@ -21,12 +22,12 @@ Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Done all steps");
 });
 
-Helpers.EnsureRightColoring(nodes.Nodes);
+graph.EnsureRightColoring();
 
 System.Console.WriteLine($"Total colors used : {coloring.UsedColors.Count}");
 
-Helpers.CreateImage(argz,drawer=>{
+Helpers.CreateImage(argz,graph.Configuration,drawer=>{
     drawer.Clear(Color.Black);
-    drawer.DrawEdges(nodes.Nodes);
-    drawer.DrawNodes(nodes.Nodes);
+    drawer.DrawEdges(graph.Edges,argz.thickness);
+    drawer.DrawNodes(graph.Nodes,argz.nodeSize);
 });

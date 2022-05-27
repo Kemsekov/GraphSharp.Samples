@@ -5,39 +5,42 @@ using System.Threading.Tasks;
 using GraphSharp.GraphStructures;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
-using SixLabors.ImageSharp;
 using GraphSharp.Extensions;
+using System.Drawing;
 
 public class Algorithm : Visitor<NodeXY, NodeConnector>
 {
-    public override IPropagator<NodeXY> Propagator { get; }
+    public override IPropagator<NodeXY,NodeConnector> Propagator { get; }
+    public IGraphStructure<NodeXY, NodeConnector> Graph { get; }
+
     /// <summary>
     /// List of used colors
     /// </summary>
     public HashSet<Color> UsedColors {get;}
     IList<Color> Colors { get; }
     int edgesCount = 0;
-    IList<NodeXY> Nodes;
     Color _emptyColor;
-    public Algorithm(GraphStructureBase<NodeXY,NodeConnector> nodes,IEnumerable<Color> colors)
+    public Algorithm(IGraphStructure<NodeXY,NodeConnector> graph,IEnumerable<Color> colors)
     {
+        Graph = graph;
         UsedColors = new();
         Colors = colors.ToList();
         _emptyColor = colors.First();
-        Propagator = new Propagator<NodeXY, NodeConnector>(this);
-        Propagator.SetNodes(nodes);
-        Nodes = nodes.Nodes;
+        Propagator = new Propagator<NodeXY, NodeConnector>(this,graph);
         EndVisit();
-        foreach(var n in Nodes)
+        foreach(var n in graph.Nodes)
             n.Color = _emptyColor;
     }
     public override void EndVisit()
     {
-        edgesCount = Nodes
+        edgesCount = Graph.Nodes
             .AsParallel()
-            .Where(x=>x.Edges.Count>edgesCount)
+            .Where(x=>Graph.Edges[x.Id].Count()>edgesCount)
             .DefaultIfEmpty()
-            .Min(x=>x?.Edges.Count ?? -1);
+            .Min(x=>{
+                if(x is null) return -1;
+                return Graph.Edges[x.Id].Count();
+            });
         
         if(Done()) return;
         SetPosition(ChoosePositions());
@@ -52,19 +55,19 @@ public class Algorithm : Visitor<NodeXY, NodeConnector>
     }
     public bool Done()=>edgesCount==-1;
     Color ChooseColor(NodeXY node){
-        var colors = node.Edges.Select(x=>x.Child.Color).Distinct();
+        var colors = Graph.Edges[node.Id].Select(x=>x.Target.Color).Distinct();
         var color = Colors.Except(colors).FirstOrDefault();
         if(color == default){
-            color = Color.FromRgb((byte)Random.Shared.Next(),(byte)Random.Shared.Next(),(byte)Random.Shared.Next());
+            color = Color.FromArgb((byte)Random.Shared.Next(256),(byte)Random.Shared.Next(256),(byte)Random.Shared.Next(256));
             Colors.Add(color);
         }
         UsedColors.Add(color);
         return color;
     }
     int[] ChoosePositions(){
-        return Nodes
+        return Graph.Nodes
             .AsParallel()
-            .Where(x=>x.Edges.Count==edgesCount)
+            .Where(x=>Graph.Edges[x.Id].Count()==edgesCount)
             .Select(x=>x.Id)
             .ToArray();
     }
