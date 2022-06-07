@@ -83,12 +83,12 @@ public static class Helpers
         }
         return res;
     }
-    public static GraphType CreateGraph(ArgumentsHandler argz)
+    public static GraphStructure<NodeXY,NodeConnector> CreateGraph(ArgumentsHandler argz)
     {
         GraphStructure<NodeXY,NodeConnector>? result = default;
         MeasureTime(() =>
         {
-            System.Console.WriteLine("Creating nodes...");
+            System.Console.WriteLine("Creating graph...");
             var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
             var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
 
