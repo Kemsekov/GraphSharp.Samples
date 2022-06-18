@@ -4,9 +4,6 @@ ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
 graph.Do.DelaunayTriangulation();
-graph.Do.MakeSpanningTree();
-graph.Do.CreateSources(65);
-graph.Nodes[65].Color = Color.Yellow;
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
 Helpers.CreateImage(argz,graph.Configuration,drawer=>{
     drawer.Clear(Color.Black);
