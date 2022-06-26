@@ -7,7 +7,7 @@ using GraphSharp.Propagators;
 using GraphSharp.Visitors;
 public class Algorithm : Visitor<NodeXY, NodeConnector>
 {
-    public override PropagatorBase<NodeXY, NodeConnector> Propagator { get; }
+    public override IPropagator<NodeXY, NodeConnector> Propagator { get; }
     public IList<IList<NodeXY>> Layers { get; }
     public bool Done { get; private set; } = false;
     public const byte Added = 4;

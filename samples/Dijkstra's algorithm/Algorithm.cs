@@ -4,67 +4,67 @@ using GraphSharp.GraphStructures;
 using GraphSharp.Nodes;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
-public class Algorithm : Visitor<NodeXY,NodeConnector>
+public class Algorithm<TNode, TEdge> : Visitor<TNode, TEdge>
+where TNode : INode
+where TEdge : IEdge<TNode>
 {
     /// <summary>
     /// _path[node] = parent 
     /// </summary>
-    IDictionary<NodeXY, NodeXY> _path = new ConcurrentDictionary<NodeXY, NodeXY>();
+    IDictionary<TNode, TNode> _path = new ConcurrentDictionary<TNode, TNode>();
     /// <summary>
     /// what is the length of path from startNode to some other node so far.  
     /// </summary>
-    IDictionary<NodeXY, double> _pathLength = new ConcurrentDictionary<NodeXY, double>();
-    NodeXY _startNode;
+    IDictionary<TNode, double> _pathLength = new ConcurrentDictionary<TNode, double>();
+    IGraphStructure<TNode, TEdge> _graph;
+    TNode _startNode;
 
-    public override IPropagator<NodeXY,NodeConnector> Propagator{get;}
+    public override PropagatorBase<TNode, TEdge> Propagator { get; }
 
     /// <param name="startNode">Node from which we need to find a shortest path</param>
-    public Algorithm(NodeXY startNode, IGraphStructure<NodeXY,NodeConnector> graph)
+    public Algorithm(TNode startNode, IGraphStructure<TNode, TEdge> graph)
     {
+        this._graph = graph;
         this._startNode = startNode;
         _pathLength[startNode] = 0;
-        Propagator = new ParallelPropagator<NodeXY,NodeConnector>(this,graph);
+        Propagator = new ParallelPropagator<TNode, TEdge>(this, graph);
     }
     public override void EndVisit()
     {
     }
 
-    public override bool Select(NodeConnector Edge)
+    public override bool Select(TEdge connection)
     {
         bool updatePath = true;
-        if (Edge is NodeConnector connection)
-        {
-            var pathLength = _pathLength[connection.Source] + connection.Weight;
+        var pathLength = _pathLength[connection.Source] + connection.Weight;
 
-            if (_pathLength.TryGetValue(connection.Target, out double pathSoFar))
+        if (_pathLength.TryGetValue(connection.Target, out double pathSoFar))
+        {
+            if (pathSoFar <= pathLength)
             {
-                if (pathSoFar <= pathLength)
-                {
-                    updatePath = false;
-                }
+                updatePath = false;
             }
-            if (updatePath)
-            {
-                _pathLength[connection.Target] = pathLength;
-                _path[connection.Target] = connection.Source;
-            }
+        }
+        if (updatePath)
+        {
+            _pathLength[connection.Target] = pathLength;
+            _path[connection.Target] = connection.Source;
         }
         return true;
     }
 
-    public override void Visit(NodeXY node)
+    public override void Visit(TNode node)
     {
-        //do nothing. We do not actually need to do anything here.
     }
 
     /// <param name="end"></param>
     /// <returns>Null if path not found</returns>
-    public List<NodeXY>? GetPath(NodeXY end)
+    public List<TNode>? GetPath(TNode end)
     {
         if (!_path.ContainsKey(end)) return null;
-        var path = new List<NodeXY>();
+        var path = new List<TNode>();
         while (true)
-            if (_path.TryGetValue(end, out NodeXY? parent))
+            if (_path.TryGetValue(end, out TNode? parent))
             {
                 path.Add(end);
                 end = parent;
@@ -74,8 +74,10 @@ public class Algorithm : Visitor<NodeXY,NodeConnector>
         path.Reverse();
         return path;
     }
-    public double GetPathLength(NodeXY node){
-        if(_pathLength.TryGetValue(node,out double length)){
+    public double GetPathLength(TNode node)
+    {
+        if (_pathLength.TryGetValue(node, out double length))
+        {
             return length;
         }
         return 0;

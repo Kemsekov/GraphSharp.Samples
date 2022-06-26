@@ -7,11 +7,12 @@ using GraphSharp.GraphStructures;
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-
+graph.Do.DelaunayTriangulation();
+graph.Do.MakeUndirected();
 var startNode = graph.Nodes[argz.node1 % graph.Nodes.Count];
 var endNode = graph.Nodes[argz.node2 % graph.Nodes.Count];
 
-var pathFinder = new Algorithm(startNode,graph);
+var pathFinder = new Algorithm<NodeXY,NodeConnector>(startNode,graph);
 pathFinder.SetPosition(startNode.Id);
 
 FindPath(startNode, endNode, pathFinder);
@@ -37,7 +38,7 @@ Helpers.CreateImage(argz,graph.Configuration,drawer=>{
     }
 });
 
-void FindPath(NodeXY startNode, NodeXY endNode, Algorithm algorithm)
+void FindPath(NodeXY startNode, NodeXY endNode, Algorithm<NodeXY,NodeConnector> algorithm)
 {
     Helpers.MeasureTime(() =>
     {
@@ -45,11 +46,6 @@ void FindPath(NodeXY startNode, NodeXY endNode, Algorithm algorithm)
         for (int i = 0; i < argz.steps; i++)
         {
             algorithm.Propagate();
-            if (pathFinder.GetPath(endNode) is not null)
-            {
-                System.Console.WriteLine($"Path found at {i} step");
-                break;
-            }
         }
     });
 }

@@ -32,7 +32,7 @@ public static class Helpers
     }
     public static void ValidatePath<TNode,TEdge>(this IGraphStructure<TNode,TEdge> graph,IList<NodeXY> path)
     where TNode : INode
-    where TEdge : IEdge
+    where TEdge : IEdge<TNode>
     {
         for (int i = 0; i < path.Count - 1; i++)
         {
@@ -52,8 +52,8 @@ public static class Helpers
         }
     }
     public static void CreateImage<TNode,TEdge>(ArgumentsHandler argz,IGraphConfiguration<TNode,TEdge> configuration,Action<GraphDrawer<TNode,TEdge>> draw)
-    where TNode : NodeBase<TEdge>
-    where TEdge : EdgeBase<TNode>
+    where TNode : INode
+    where TEdge : IEdge<TNode>
     {
         MeasureTime(() =>
         {

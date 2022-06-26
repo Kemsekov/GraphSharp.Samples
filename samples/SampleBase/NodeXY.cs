@@ -7,12 +7,14 @@ using SampleBase;
 /// <summary>
 /// Edge class for the NodeXY class.
 /// </summary>
-public class NodeXY : NodeBase<NodeConnector>, INodeData
+public class NodeXY : INode
 {
-    public NodeXY(int id, Vector2 position) : base(id)
+    public NodeXY(int id, Vector2 position)
     {
+        Id = id;
         Position = position;
     }
+    public int Id{get;}
     public Vector2 Position { get; set; }
     public float Weight{get;set;}
     public Color Color{get;set;} = Color.Brown;
