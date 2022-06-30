@@ -4,7 +4,7 @@ using System.Drawing;
 ArgumentsHandler argz = new("settings.json");
 
 var graph = CreateSampleGraph();
-
+graph.Do.MakeDirected();
 var points = graph.Do.GetArticulationPoints();
 foreach (var p in points)
 {
@@ -42,28 +42,20 @@ GraphSharp.GraphStructures.GraphStructure<NodeXY, NodeConnector> CreateSampleGra
 
 
     graph.Edges.Add(new(graph.Nodes[0], graph.Nodes[1]));
-    graph.Edges.Add(new(graph.Nodes[1], graph.Nodes[0]));
 
     graph.Edges.Add(new(graph.Nodes[2], graph.Nodes[0]));
-    graph.Edges.Add(new(graph.Nodes[0], graph.Nodes[2]));
 
     graph.Edges.Add(new(graph.Nodes[2], graph.Nodes[1]));
-    graph.Edges.Add(new(graph.Nodes[1], graph.Nodes[2]));
 
     graph.Edges.Add(new(graph.Nodes[6], graph.Nodes[1]));
-    graph.Edges.Add(new(graph.Nodes[1], graph.Nodes[6]));
 
     graph.Edges.Add(new(graph.Nodes[3], graph.Nodes[1]));
-    graph.Edges.Add(new(graph.Nodes[1], graph.Nodes[3]));
 
     graph.Edges.Add(new(graph.Nodes[1], graph.Nodes[4]));
-    graph.Edges.Add(new(graph.Nodes[4], graph.Nodes[1]));
 
     graph.Edges.Add(new(graph.Nodes[3], graph.Nodes[5]));
-    graph.Edges.Add(new(graph.Nodes[5], graph.Nodes[3]));
 
     graph.Edges.Add(new(graph.Nodes[5], graph.Nodes[4]));
-    graph.Edges.Add(new(graph.Nodes[4], graph.Nodes[5]));
 
     graph.Edges.Add(new(graph.Nodes[5], graph.Nodes[7]));
 

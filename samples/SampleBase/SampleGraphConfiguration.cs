@@ -7,24 +7,37 @@ using System.Threading.Tasks;
 using GraphSharp.GraphStructures;
 namespace SampleBase
 {
-    public class SampleGraphConfiguration : GraphConfiguration<NodeXY, NodeConnector>
+    public class SampleGraphConfiguration : IGraphConfiguration<NodeXY, NodeConnector>
     {
 
         public Random CreateNodesRand{get;set;} = new Random();
         public Random CreateEdgesRand{get;set;} = new Random();
 
-        public SampleGraphConfiguration(Random rand) : base(rand)
+        public Random Rand{get;}
+
+        public SampleGraphConfiguration(Random rand)
         {
+            Rand = rand;
         }
-        public override NodeConnector CreateEdge(NodeXY parent, NodeXY child)
+        public NodeConnector CreateEdge(NodeXY parent, NodeXY child)
         {
             return new NodeConnector(parent,child);
         }
 
 
-        public override NodeXY CreateNode(int nodeId)
+        public NodeXY CreateNode(int nodeId)
         {
             return new NodeXY(nodeId,new(CreateNodesRand.NextSingle(),CreateNodesRand.NextSingle()));
+        }
+
+        public IEdgeSource<NodeXY, NodeConnector> CreateEdgeSource()
+        {
+            return new DefaultEdgeSource<NodeXY,NodeConnector>();
+        }
+
+        public INodeSource<NodeXY> CreateNodeSource()
+        {
+            return new DefaultNodeSource<NodeXY>(0);
         }
     }
 }

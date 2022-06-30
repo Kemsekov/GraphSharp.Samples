@@ -9,16 +9,14 @@ ArgumentsHandler argz = new("settings.json");
 var graph = Helpers.CreateGraph(argz);
 graph.Do.DelaunayTriangulation();
 graph.Do.MakeUndirected();
-var startNode = graph.Nodes[argz.node1 % graph.Nodes.Count];
-var endNode = graph.Nodes[argz.node2 % graph.Nodes.Count];
+var startNode = argz.node1 % graph.Nodes.Count;
+var endNode = argz.node2 % graph.Nodes.Count;
 
-var pathFinder = new Algorithm<NodeXY,NodeConnector>(startNode,graph);
-pathFinder.SetPosition(startNode.Id);
-
-FindPath(startNode, endNode, pathFinder);
+var pathFinder = graph.Do.FindShortestPaths(startNode);
 
 var path = pathFinder.GetPath(endNode) ?? new List<NodeXY>();
 var pathLength = pathFinder.GetPathLength(endNode);
+
 var computedPath = Helpers.ComputePathLength(path);
 graph.ValidatePath(path);
 
@@ -37,16 +35,4 @@ Helpers.CreateImage(argz,graph.Configuration,drawer=>{
         drawer.DrawPath(path,Color.Wheat,argz.thickness);
     }
 });
-
-void FindPath(NodeXY startNode, NodeXY endNode, Algorithm<NodeXY,NodeConnector> algorithm)
-{
-    Helpers.MeasureTime(() =>
-    {
-        System.Console.WriteLine($"Trying to find path from Node {startNode.Id} to Node {endNode.Id}...");
-        for (int i = 0; i < argz.steps; i++)
-        {
-            algorithm.Propagate();
-        }
-    });
-}
 
