@@ -11,10 +11,10 @@ public class Algorithm : Visitor<NodeXY, NodeConnector>
     public IList<IList<NodeXY>> Layers { get; }
     public bool Done { get; private set; } = false;
     public const byte Added = 4;
-    public Algorithm(GraphStructureBase<NodeXY, NodeConnector> graph)
+    public Algorithm(GraphStructure<NodeXY, NodeConnector> graph)
     {
         Propagator = new ParallelPropagator<NodeXY, NodeConnector>(this, graph);
-        var incomingEdges = graph.CountIncomingEdges();
+        var incomingEdges = graph.Do.CountIncomingEdges();
         var startingNodes = new List<int>();
         foreach (var count in incomingEdges)
         {
