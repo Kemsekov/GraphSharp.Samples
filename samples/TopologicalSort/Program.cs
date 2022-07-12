@@ -1,18 +1,24 @@
 ﻿using System.Drawing;
+using GraphSharp.Visitors;
 
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-graph.Do.CreateSources(65,77,39,40);
+graph.Do.MakeUndirected();
+graph.Do.MakeSources(65,77,39,40);
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Doing topological sort...");
-    var alg = new Algorithm(graph);
-    while(!alg.Done){
-        alg.Propagate();
-    }
-    alg.DoTopologicalSort();
+    graph.Do.TopologicalSort();
 });
+
+foreach(var component in graph.Do.FindComponents().components){
+    var color = Color.FromArgb(Random.Shared.Next(256),Random.Shared.Next(256),Random.Shared.Next(256));
+    foreach(var node in component){
+        node.Color = color;
+    }
+}
+
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
 Helpers.CreateImage(argz,graph.Configuration,drawer=>{
     drawer.Clear(Color.Black);

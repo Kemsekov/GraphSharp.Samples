@@ -15,6 +15,7 @@ public class NodeConnector : IEdge<NodeXY>, IComparable<NodeConnector>
         Source = source;
         Target = target;
     }
+    public static Color DefaultColor = Color.BlueViolet;
     public float Weight{get;set;} = 1;
     public Color Color{get;set;} = Color.BlueViolet;
     public NodeXY Source {get;set;}

@@ -5,7 +5,7 @@ ArgumentsHandler argz = new("settings.json");
 
 var graph = CreateSampleGraph();
 graph.Do.MakeDirected();
-var points = graph.Do.GetArticulationPoints();
+var points = graph.Do.FindArticulationPoints();
 foreach (var p in points)
 {
     //mark articulation points

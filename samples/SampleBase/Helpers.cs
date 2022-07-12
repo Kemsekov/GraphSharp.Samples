@@ -6,7 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using GraphSharp.GraphStructures;
-using GraphType = GraphSharp.GraphStructures.GraphStructureBase<NodeXY,NodeConnector>;
+using GraphType = GraphSharp.GraphStructures.IGraphStructure<NodeXY,NodeConnector>;
 using Newtonsoft.Json;
 using SampleBase;
 using System.Text;
@@ -30,17 +30,12 @@ public static class Helpers
         Console.WriteLine($"End operation in {watch.ElapsedMilliseconds} Milliseconds");
         Console.ResetColor();
     }
-    public static void ValidatePath<TNode,TEdge>(this IGraphStructure<TNode,TEdge> graph,IList<NodeXY> path)
+    public static void PrintPath<TNode>(IList<TNode> path)
     where TNode : INode
-    where TEdge : IEdge<TNode>
     {
-        for (int i = 0; i < path.Count - 1; i++)
-        {
-            var current = path[i];
-            var next = path[i + 1];
-            if(!graph.Edges.TryGetEdge(current.Id,next.Id,out var edge)){
-                throw new System.Exception($"Edge {current.Id}-{next.Id} not found! Path is not valid!");
-            }
+        System.Console.WriteLine("-------------------");
+        foreach(var p in path){
+            System.Console.WriteLine(p);
         }
     }
     public static void ShiftNodesToFitInTheImage<TNode>(IEnumerable<TNode> nodes)

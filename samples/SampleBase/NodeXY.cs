@@ -14,15 +14,16 @@ public class NodeXY : INode
         Id = id;
         Position = position;
     }
+    public static Color DefaultColor = Color.Brown;
     public int Id{get;}
     public Vector2 Position { get; set; }
     public float Weight{get;set;}
-    public Color Color{get;set;} = Color.Brown;
+    public Color Color{get;set;} = DefaultColor;
     public float Distance(NodeXY other){
         return (other.Position-Position).Length();
     }
     public override string ToString()
     {
-        return $"{Id}\t({Position.X}\t{Position.Y})";
+        return $"{Id}\t({Position.X.ToString("0.00")}\t{Position.Y.ToString("0.00")})";
     }
 }
