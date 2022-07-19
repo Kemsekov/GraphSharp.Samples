@@ -5,8 +5,8 @@ using GraphSharp;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
-using GraphSharp.GraphStructures;
-using GraphType = GraphSharp.GraphStructures.IGraphStructure<NodeXY,NodeConnector>;
+using GraphSharp.Graphs;
+using GraphType = GraphSharp.Graphs.IGraph<NodeXY,NodeConnector>;
 using Newtonsoft.Json;
 using SampleBase;
 using System.Text;
@@ -78,9 +78,9 @@ public static class Helpers
         }
         return res;
     }
-    public static GraphStructure<NodeXY,NodeConnector> CreateGraph(ArgumentsHandler argz)
+    public static Graph<NodeXY,NodeConnector> CreateGraph(ArgumentsHandler argz)
     {
-        GraphStructure<NodeXY,NodeConnector>? result = default;
+        Graph<NodeXY,NodeConnector>? result = default;
         MeasureTime(() =>
         {
             System.Console.WriteLine("Creating graph...");
@@ -92,7 +92,7 @@ public static class Helpers
                 CreateEdgesRand = conRand
             };
     
-            result = new GraphStructure<NodeXY,NodeConnector>(config)
+            result = new Graph<NodeXY,NodeConnector>(config)
                 .Create(argz.nodesCount);
             result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges);
         });

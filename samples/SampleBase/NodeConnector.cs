@@ -7,7 +7,7 @@ using SampleBase;
 /// <summary>
 /// Edge class for the NodeXY class.
 /// </summary>
-public class NodeConnector : IEdge<NodeXY>, IComparable<NodeConnector>
+public class NodeConnector : IEdge<NodeXY>
 {
     public NodeConnector(NodeXY source,NodeXY target)
     {
@@ -20,9 +20,6 @@ public class NodeConnector : IEdge<NodeXY>, IComparable<NodeConnector>
     public Color Color{get;set;} = Color.BlueViolet;
     public NodeXY Source {get;set;}
     public NodeXY Target {get;set;}
-
-    public int CompareTo(NodeConnector? other)
-    {
-        return other?.Target.Id.CompareTo(Target.Id) ?? throw new NullReferenceException();
-    }
+    public float Flow{get;set;}
+    public float Capacity{get;set;}
 }

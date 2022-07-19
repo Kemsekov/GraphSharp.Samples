@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-using GraphSharp.GraphStructures;
+using GraphSharp.Graphs;
 namespace SampleBase
 {
     public class SampleGraphConfiguration : IGraphConfiguration<NodeXY, NodeConnector>
@@ -13,7 +13,7 @@ namespace SampleBase
         public Random CreateNodesRand{get;set;} = new Random();
         public Random CreateEdgesRand{get;set;} = new Random();
 
-        public Random Rand{get;}
+        public Random Rand{get;set;}
 
         public SampleGraphConfiguration(Random rand)
         {

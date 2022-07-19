@@ -1,6 +1,6 @@
 ﻿
 using System.Drawing;
-using GraphSharp.GraphStructures;
+using GraphSharp.Graphs;
 
 ArgumentsHandler argz = new("settings.json");
 

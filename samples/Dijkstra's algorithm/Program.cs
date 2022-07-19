@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using GraphSharp;
-using GraphSharp.GraphStructures;
+using GraphSharp.Graphs;
 //this program showing how to find the shortest path between two nodes
 //by summing and comparing sum of visited path
 
