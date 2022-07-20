@@ -20,7 +20,7 @@ Helpers.CreateImage(argz, graph.Configuration, drawer =>
     drawer.DrawNodeIds(graph.Nodes, Color.White, argz.fontSize);
 });
 
-GraphSharp.Graphs.Graph<NodeXY, NodeConnector> CreateSampleGraph()
+GraphSharp.Graphs.Graph CreateSampleGraph()
 {
     var graph = Helpers.CreateGraph(argz);
     graph.Edges.Clear();

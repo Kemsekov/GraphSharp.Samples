@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using GraphSharp.Graphs;
+using GraphSharp.Nodes;
 
 //This sample shows how easy it is to find cycles basis!
 
@@ -9,7 +10,7 @@ var graph = Helpers.CreateGraph(argz);
 graph.Do.DelaunayTriangulation();
 graph.Do.MakeUndirected();
 graph.CheckForIntegrity();
-var cycles = Enumerable.Empty<IList<NodeXY>>();
+var cycles = Enumerable.Empty<IList<Node>>();
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine($"Finding cycles basis...");

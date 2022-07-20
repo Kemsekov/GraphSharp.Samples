@@ -6,7 +6,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using GraphSharp.Graphs;
-using GraphType = GraphSharp.Graphs.IGraph<NodeXY,NodeConnector>;
 using Newtonsoft.Json;
 using SampleBase;
 using System.Text;
@@ -78,22 +77,19 @@ public static class Helpers
         }
         return res;
     }
-    public static Graph<NodeXY,NodeConnector> CreateGraph(ArgumentsHandler argz)
+    public static Graph CreateGraph(ArgumentsHandler argz)
     {
-        Graph<NodeXY,NodeConnector>? result = default;
+        Graph? result = default;
         MeasureTime(() =>
         {
             System.Console.WriteLine("Creating graph...");
             var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
             var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
 
-            var config = new SampleGraphConfiguration(rand){
-                CreateNodesRand = rand,
-                CreateEdgesRand = conRand
-            };
     
-            result = new Graph<NodeXY,NodeConnector>(config)
-                .Create(argz.nodesCount);
+            result = new Graph(id=>new(id){Position=new(rand.NextSingle(),rand.NextSingle())},(n1,n2)=>new(n1,n2));
+
+            result.Create(argz.nodesCount);
             result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges);
         });
         return result ?? throw new Exception("Create node failure");;
@@ -102,7 +98,7 @@ public static class Helpers
     /// <summary>
     /// Save graph to json file
     /// </summary>
-    public static void SaveGraph(GraphType graph,string filename)
+    public static void SaveGraph(Graph graph,string filename)
     {
         MeasureTime(() =>
         {
@@ -117,7 +113,7 @@ public static class Helpers
     }
 
     //Load graph from json file
-    public static GraphType LoadGraph(string filename)
+    public static Graph LoadGraph(string filename)
     {
         throw new NotImplementedException();
     }

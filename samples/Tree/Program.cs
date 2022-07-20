@@ -1,10 +1,12 @@
 ﻿using System.Drawing;
+using GraphSharp.Edges;
+using GraphSharp.Nodes;
 
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
 graph.Do.DelaunayTriangulation();
-IList<NodeConnector> tree = new List<NodeConnector>();
+IList<Edge> tree = new List<Edge>();
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Finding minimal spanning tree...");

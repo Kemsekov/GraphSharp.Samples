@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using GraphSharp;
 using GraphSharp.Graphs;
+using GraphSharp.Nodes;
 //this program showing how to find the shortest path between two nodes
 //by summing and comparing sum of visited path
 
@@ -14,7 +15,7 @@ var endNode = argz.node2 % graph.Nodes.Count;
 
 var pathFinder = graph.Do.FindShortestPaths(startNode);
 
-var path = pathFinder.GetPath(endNode) ?? new List<NodeXY>();
+var path = pathFinder.GetPath(endNode) ?? new List<Node>();
 var pathLength = pathFinder.GetPathLength(endNode);
 
 var computedPath = Helpers.ComputePathLength(path);
