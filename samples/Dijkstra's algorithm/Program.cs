@@ -1,9 +1,12 @@
 ﻿using System.Drawing;
 using GraphSharp;
+using GraphSharp.Edges;
 using GraphSharp.Graphs;
 using GraphSharp.Nodes;
 //this program showing how to find the shortest path between two nodes
 //by summing and comparing sum of visited path
+
+Edge.DefaultColor = Color.DarkViolet;
 
 ArgumentsHandler argz = new("settings.json");
 

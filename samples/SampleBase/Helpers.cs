@@ -87,8 +87,8 @@ public static class Helpers
             var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
 
     
-            result = new Graph(id=>new(id){Position=new(rand.NextSingle(),rand.NextSingle())},(n1,n2)=>new(n1,n2));
-
+            result = new Graph(id=>new(id){Position=new(rand.NextSingle(),rand.NextSingle())},(n1,n2)=>new(n1,n2){Weight = (n1.Position-n2.Position).Length()});
+            result.Configuration.Rand = conRand;
             result.Create(argz.nodesCount);
             result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges);
         });
