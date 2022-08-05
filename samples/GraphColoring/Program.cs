@@ -19,7 +19,7 @@ Helpers.MeasureTime(()=>{
 });
 
 graph.EnsureRightColoring();
-Helpers.CreateImage(argz,graph.Configuration,drawer=>{
+Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdges(graph.Edges,argz.thickness);
     drawer.DrawNodes(graph.Nodes,argz.nodeSize);

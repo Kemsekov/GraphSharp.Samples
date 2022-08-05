@@ -19,7 +19,7 @@ Helpers.MeasureTime(() =>
     }
 });
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
-Helpers.CreateImage(argz,graph.Configuration,drawer=>{
+Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
     drawer.DrawNodesParallel(graph.Nodes,argz.nodeSize);

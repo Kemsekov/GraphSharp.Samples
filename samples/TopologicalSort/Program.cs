@@ -20,7 +20,7 @@ foreach(var component in graph.Do.FindComponents().components){
 }
 
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
-Helpers.CreateImage(argz,graph.Configuration,drawer=>{
+Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
     drawer.DrawDirections(graph.Edges,argz.thickness,argz.directionLength,Color.CadetBlue);

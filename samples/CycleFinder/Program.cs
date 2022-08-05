@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
+using GraphSharp;
 using GraphSharp.Graphs;
-using GraphSharp.Nodes;
 
 //This sample shows how easy it is to find cycles basis!
 
@@ -26,7 +26,7 @@ foreach (var c in cycles)
 var orderedCycles = cycles.OrderBy(x => x.Count).ToList();
 
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
-Helpers.CreateImage(argz, graph.Configuration, drawer =>
+Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges, argz.thickness);

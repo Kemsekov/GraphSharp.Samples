@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using GraphSharp.Nodes;
-using GraphSharp.Edges;
 using GraphSharp;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -45,9 +43,9 @@ public static class Helpers
             n.Position = newPos;
         }
     }
-    public static void CreateImage<TNode,TEdge>(ArgumentsHandler argz,IGraphConfiguration<TNode,TEdge> configuration,Action<GraphDrawer<TNode,TEdge>> draw)
+    public static void CreateImage<TNode,TEdge>(ArgumentsHandler argz,IGraph<TNode,TEdge> graph,Action<GraphDrawer<TNode,TEdge>> draw)
     where TNode : INode
-    where TEdge : IEdge<TNode>
+    where TEdge : IEdge
     {
         MeasureTime(() =>
         {
@@ -56,7 +54,7 @@ public static class Helpers
             using var image = new Image<Rgba32>(argz.outputResolution, argz.outputResolution);
             image.Mutate(x=>{
                 var shapeDrawer = new ImageSharpShapeDrawer(x,image, argz.fontSize);
-                var drawer = new GraphDrawer<TNode,TEdge>(configuration,shapeDrawer);
+                var drawer = new GraphDrawer<TNode,TEdge>(graph,shapeDrawer);
                 draw(drawer);
             });
             System.Console.WriteLine("Saving image...");

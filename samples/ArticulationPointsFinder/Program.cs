@@ -12,7 +12,7 @@ foreach (var p in points)
     p.Color = Color.Aqua;
 }
 
-Helpers.CreateImage(argz, graph.Configuration, drawer =>
+Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
     drawer.DrawEdges(graph.Edges, argz.thickness);

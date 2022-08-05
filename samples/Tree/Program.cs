@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
-using GraphSharp.Edges;
-using GraphSharp.Nodes;
+using GraphSharp;
 
 ArgumentsHandler argz = new("settings.json");
 
@@ -17,7 +16,7 @@ foreach (var edge in tree)
     edge.Color = Color.Azure;
 }
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
-Helpers.CreateImage(argz, graph.Configuration, drawer =>
+Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges, argz.thickness);
