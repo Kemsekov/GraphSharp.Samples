@@ -3,7 +3,7 @@
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-graph.Do.DelaunayTriangulation();
+graph.Do.DelaunayTriangulationWithoutHull();
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
 Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
