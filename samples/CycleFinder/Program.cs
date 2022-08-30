@@ -9,7 +9,7 @@ ArgumentsHandler argz = new("settings.json");
 var graph = Helpers.CreateGraph(argz);
 graph.Do.DelaunayTriangulation();
 graph.Do.MakeUndirected();
-graph.CheckForIntegrity();
+graph.CheckForIntegrityOfSimpleGraph();
 var cycles = Enumerable.Empty<IList<Node>>();
 Helpers.MeasureTime(() =>
 {

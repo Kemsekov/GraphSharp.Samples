@@ -8,32 +8,39 @@ using GraphSharp.Graphs;
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-// graph.Do.DelaunayTriangulation();
-graph.Do.MakeUndirected();
-graph.Edges.SetColorToAll(Color.DarkViolet);
-graph.Nodes.SetColorToAll(Color.Brown);
+graph.Do.DelaunayTriangulation();
+
 var startNode = argz.node1 % graph.Nodes.Count;
 var endNode = argz.node2 % graph.Nodes.Count;
+IList<Node> path = new List<Node>();
+double pathLength = 0;
 
-var shortestPathFinder = graph.Do.FindShortestPathsParallel(startNode,x=>x.Weight);
+Helpers.MeasureTime(()=>{
+    System.Console.WriteLine("Finding all shortest paths parallel...");
+    var shortestPathFinder = graph.Do.FindShortestPathsParallel(startNode,x=>x.Weight);
+    path = shortestPathFinder.GetPath(endNode) ?? new List<Node>();
+    pathLength = shortestPathFinder.GetPathLength(endNode);
+    System.Console.WriteLine($"Shortest path length : {pathLength}");
+});
+Helpers.MeasureTime(()=>{
+    System.Console.WriteLine("Finding all shortest paths...");
+    var shortestPathFinder = graph.Do.FindShortestPaths(startNode,x=>x.Weight);
+    path = shortestPathFinder.GetPath(endNode) ?? new List<Node>();
+    pathLength = shortestPathFinder.GetPathLength(endNode);
+    System.Console.WriteLine($"Shortest path length : {pathLength}");
+});
+graph.ValidatePath(path);
 
-var path1 = shortestPathFinder.GetPath(endNode) ?? new List<Node>();
-var pathLength1 = shortestPathFinder.GetPathLength(endNode);
-
-
-graph.ValidatePath(path1);
-
-System.Console.WriteLine($"Shortest path length : {pathLength1}");
 
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
-
+if(false)
 Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
     drawer.DrawNodesParallel(graph.Nodes,argz.nodeSize);
-    if (path1?.Count > 0)
+    if (path?.Count > 0)
     {
-        drawer.DrawPath(path1,Color.Wheat,argz.thickness);
+        drawer.DrawPath(path,Color.Wheat,argz.thickness);
     }
 });
 
