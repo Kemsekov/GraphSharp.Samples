@@ -9,7 +9,7 @@ IList<Edge> tree = new List<Edge>();
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Finding minimal spanning tree...");
-    tree = graph.Do.FindSpanningTree();
+    tree = graph.Do.FindSpanningTreeKruskal();
 });
 foreach (var edge in tree)
 {

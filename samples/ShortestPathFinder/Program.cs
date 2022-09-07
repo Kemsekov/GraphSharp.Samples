@@ -17,27 +17,25 @@ double pathLength = 0;
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Finding all shortest paths parallel...");
-    var shortestPathFinder = graph.Do.FindShortestPathsParallel(startNode,x=>x.Weight);
+    var shortestPathFinder = graph.Do.FindShortestPathsParallelDijkstra(startNode,x=>x.Weight);
     path = shortestPathFinder.GetPath(endNode) ?? new List<Node>();
-    pathLength = shortestPathFinder.GetPathLength(endNode);
+    pathLength = shortestPathFinder.PathLength[endNode];
     System.Console.WriteLine($"Shortest path length : {pathLength}");
 });
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Finding all shortest paths...");
-    var shortestPathFinder = graph.Do.FindShortestPaths(startNode,x=>x.Weight);
+    var shortestPathFinder = graph.Do.FindShortestPathsDijkstra(startNode,x=>x.Weight);
     path = shortestPathFinder.GetPath(endNode) ?? new List<Node>();
-    pathLength = shortestPathFinder.GetPathLength(endNode);
+    pathLength = shortestPathFinder.PathLength[endNode];
     System.Console.WriteLine($"Shortest path length : {pathLength}");
 });
 graph.ValidatePath(path);
 
 
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
-if(false)
 Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
-    drawer.DrawNodesParallel(graph.Nodes,argz.nodeSize);
     if (path?.Count > 0)
     {
         drawer.DrawPath(path,Color.Wheat,argz.thickness);

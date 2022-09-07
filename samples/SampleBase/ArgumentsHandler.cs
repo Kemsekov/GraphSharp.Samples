@@ -15,7 +15,15 @@ public class ArgumentsHandler
     public float nodeSize = 0.015f;
     public float fontSize = 0.012f;
     public string filename = "example.jpg";
-    public float directionLength = 0.01f;
+    public float directionLength = 0.1f;
+    /// <summary>
+    /// Desired render intervals
+    /// </summary>
+    public int renderIntervalMilliseconds = 1000;
+    /// <summary>
+    /// Desired intervals between each compute iteration
+    /// </summary>
+    public int computeIntervalMilliseconds = 500;
     public ArgumentsHandler(string settingsFile)
     {
         dynamic paramz = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(settingsFile)) ?? new object();
@@ -33,5 +41,7 @@ public class ArgumentsHandler
         fontSize = paramz.fontSize ?? 0.001;
         filename = paramz.filename ?? "example.jpg";
         directionLength = paramz.directionLength ?? 0.01f;
+        renderIntervalMilliseconds = paramz.renderIntervalMilliseconds ?? 1000;
+        computeIntervalMilliseconds = paramz.computeIntervalMilliseconds ?? 500;
     }
 }

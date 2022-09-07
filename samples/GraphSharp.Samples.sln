@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tree", "Temp\Tree.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopologicalSort", "TopologicalSort\TopologicalSort.csproj", "{715D01C8-41DB-4090-9846-597168C3E9B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalClusteringCoefficients", "FindLocalClusteringCoefficients\LocalClusteringCoefficients.csproj", "{64481756-1819-4A2E-8391-C321C4F9C517}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphRenderSample", "GraphRenderSample\GraphRenderSample.csproj", "{339653D7-9A46-4FFA-928A-31BCE68594DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,5 +88,13 @@ Global
 		{715D01C8-41DB-4090-9846-597168C3E9B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{715D01C8-41DB-4090-9846-597168C3E9B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{715D01C8-41DB-4090-9846-597168C3E9B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64481756-1819-4A2E-8391-C321C4F9C517}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64481756-1819-4A2E-8391-C321C4F9C517}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64481756-1819-4A2E-8391-C321C4F9C517}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64481756-1819-4A2E-8391-C321C4F9C517}.Release|Any CPU.Build.0 = Release|Any CPU
+		{339653D7-9A46-4FFA-928A-31BCE68594DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{339653D7-9A46-4FFA-928A-31BCE68594DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{339653D7-9A46-4FFA-928A-31BCE68594DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{339653D7-9A46-4FFA-928A-31BCE68594DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

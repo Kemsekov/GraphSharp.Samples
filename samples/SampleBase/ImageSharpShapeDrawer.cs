@@ -16,7 +16,6 @@ namespace SampleBase
 {
     public class ImageSharpShapeDrawer : IShapeDrawer
     {
-        public System.Drawing.PointF Size {get;}
         public IImageProcessingContext Context { get; }
         public float FontSize { get; }
         public SixLabors.ImageSharp.Image<Rgba32> Image { get; }
@@ -38,8 +37,6 @@ namespace SampleBase
             var notoSans = fonts.CreateFont("Noto Sans", fontSize * image.Height, FontStyle.Regular);
 
             Font = notoSans;
-            
-            Size = new(image.Width,image.Height);
         }
 
         public void Clear(Color color)
@@ -50,17 +47,17 @@ namespace SampleBase
         public void DrawLine(Vector2 start, Vector2 end, Color color, float thickness)
         {
             var brush = new SolidBrush(color.ToImageSharpColor());
-            Context.DrawLines(new DrawingOptions() { }, brush, thickness * Image.Height, start, end);
+            Context.DrawLines(new DrawingOptions() { }, brush, thickness, start, end);
         }
 
-        public void DrawText(string text, Vector2 position, Color color)
+        public void DrawText(string text, Vector2 position, Color color,float fontSize = -1)
         {
             Context.DrawText(text, Font, color.ToImageSharpColor(), position);
         }
 
         public void FillEllipse(Vector2 position, float width, float height, Color color)
         {
-            var ellipse = new EllipsePolygon(position, (width+height) * Image.Height/2);
+            var ellipse = new EllipsePolygon(position, (width+height)/2);
             var brush = new SolidBrush(color.ToImageSharpColor());
             Context.FillPolygon(new DrawingOptions() { }, brush, ellipse.Points.ToArray());
         }

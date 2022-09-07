@@ -31,19 +31,62 @@ public static class Helpers
     where TNode : INode
     {
         System.Console.WriteLine("-------------------");
-        foreach(var p in path){
+        foreach (var p in path)
+        {
             System.Console.WriteLine(p);
+        }
+    }
+    /// <summary>
+    /// Normalizes all edges weights to be in range [0,1]
+    /// </summary>
+    /// <param name="edges"></param>
+    public static void NormalizeEdgesWeights(IEnumerable<Edge> edges)
+    {
+        var max = edges.MaxBy(x => x.Weight)?.Weight ?? throw new ArgumentException("Null edge given");
+        foreach (var e in edges)
+            e.Weight /= max;
+    }
+    /// <summary>
+    /// Normalizes positions of nodes to be in range [0,1]
+    /// </summary>
+    /// <param name="nodes"></param>
+    public static void NormalizeNodePositions(IEnumerable<Node> nodes)
+    {
+        var maxX = 0f;
+        var minX = float.MaxValue;
+        var maxY = 0f;
+        var minY = float.MaxValue;
+        foreach (var n in nodes)
+        {
+            maxX = MathF.Max(n.Position.X, maxX);
+            maxY = MathF.Max(n.Position.Y, maxY);
+            minX = MathF.Min(n.Position.X, minX);
+            minY = MathF.Min(n.Position.Y, minY);
+        }
+        var shift = new Vector2(minX, minY);
+        foreach (var n in nodes)
+        {
+            n.Position -= shift;
+        }
+        var diffX = maxX - minX;
+        var diffY = maxY - minY;
+
+        var maxDiff = MathF.Max(diffX, diffY);
+        foreach (var n in nodes)
+        {
+            n.Position /= maxDiff;
         }
     }
     public static void ShiftNodesToFitInTheImage<TNode>(IEnumerable<TNode> nodes)
     where TNode : INode, IPositioned
     {
-        foreach(var n in nodes){
-            var newPos = new Vector2(n.Position.X*0.9f+0.05f,n.Position.Y*0.9f+0.05f);
+        foreach (var n in nodes)
+        {
+            var newPos = new Vector2(n.Position.X * 0.9f + 0.05f, n.Position.Y * 0.9f + 0.05f);
             n.Position = newPos;
         }
     }
-    public static void CreateImage<TNode,TEdge>(ArgumentsHandler argz,IGraph<TNode,TEdge> graph,Action<GraphDrawer<TNode,TEdge>> draw)
+    public static void CreateImage<TNode, TEdge>(ArgumentsHandler argz, IGraph<TNode, TEdge> graph, Action<GraphDrawer<TNode, TEdge>> draw)
     where TNode : INode
     where TEdge : IEdge
     {
@@ -52,9 +95,10 @@ public static class Helpers
             System.Console.WriteLine("Creating image...");
 
             using var image = new Image<Rgba32>(argz.outputResolution, argz.outputResolution);
-            image.Mutate(x=>{
-                var shapeDrawer = new ImageSharpShapeDrawer(x,image, argz.fontSize);
-                var drawer = new GraphDrawer<TNode,TEdge>(graph,shapeDrawer);
+            image.Mutate(x =>
+            {
+                var shapeDrawer = new ImageSharpShapeDrawer(x, image, argz.fontSize);
+                var drawer = new GraphDrawer<TNode, TEdge>(graph, shapeDrawer,argz.outputResolution);
                 draw(drawer);
             });
             System.Console.WriteLine("Saving image...");
@@ -66,11 +110,12 @@ public static class Helpers
     {
         float res = 0;
         var current = path.GetEnumerator();
-        if(!current.MoveNext())
+        if (!current.MoveNext())
             return 0;
         var previous = current.Current;
-        while(current.MoveNext()){
-            res += (float)Vector2.Distance(previous.Position,current.Current.Position);
+        while (current.MoveNext())
+        {
+            res += (float)Vector2.Distance(previous.Position, current.Current.Position);
             previous = current.Current;
         }
         return res;
@@ -84,26 +129,27 @@ public static class Helpers
             var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
             var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
 
-    
-            result = new Graph(id=>new(id){Position=new(rand.NextSingle(),rand.NextSingle())},(n1,n2)=>new(n1,n2){Weight = (n1.Position-n2.Position).Length()});
+
+            result = new Graph(id => new(id) { Position = new(rand.NextSingle(), rand.NextSingle()) }, (n1, n2) => new(n1, n2) { Weight = (n1.Position - n2.Position).Length() });
             result.Configuration.Rand = conRand;
             result.CreateNodes(argz.nodesCount);
             result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges);
         });
-        return result ?? throw new Exception("Create node failure");;
+        return result ?? throw new Exception("Create node failure"); ;
     }
 
     /// <summary>
     /// Save graph to json file
     /// </summary>
-    public static void SaveGraph(Graph graph,string filename)
+    public static void SaveGraph(Graph graph, string filename)
     {
         MeasureTime(() =>
         {
             System.Console.WriteLine("Saving graph...");
-            var to_save = new {
-                Nodes=graph.Nodes,
-                Edges=graph.Edges
+            var to_save = new
+            {
+                Nodes = graph.Nodes,
+                Edges = graph.Edges
             };
             var json = JsonConvert.SerializeObject(to_save, Formatting.Indented);
             System.IO.File.WriteAllText(filename, json);
@@ -116,6 +162,6 @@ public static class Helpers
         throw new NotImplementedException();
     }
 
-   
+
 
 }
