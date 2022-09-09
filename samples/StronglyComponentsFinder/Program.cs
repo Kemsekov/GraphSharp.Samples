@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
-using GraphSharp.Edges;
 using GraphSharp.Graphs;
-using GraphSharp.Nodes;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
 using MathNet.Numerics.LinearAlgebra.Single;
@@ -10,7 +8,7 @@ using SampleBase;
 
 ArgumentsHandler argz = new("settings.json");
 var graph = Helpers.CreateGraph(argz);
-var components = graph.Do.FindStronglyConnectedComponents();
+var components = graph.Do.FindStronglyConnectedComponentsTarjan();
 System.Console.WriteLine(components.Sum(x=>x.nodes.Count()));
 System.Console.WriteLine(components.Count());
 foreach(var c in components){
@@ -20,7 +18,7 @@ foreach(var c in components){
     }
 }
 
-Helpers.CreateImage(argz, graph.Configuration, drawer =>
+Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges, argz.thickness);

@@ -5,7 +5,7 @@
     "node1" : 32,
     "node2" : 63,
     "minEdges" : 2,
-    "maxEdges" : 7,
+    "maxEdges" : 5,
     "steps" : 3000,
     "outputResolution" : 2000,
     "nodeSize" : 0.004,

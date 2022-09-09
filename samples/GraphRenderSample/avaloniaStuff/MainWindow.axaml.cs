@@ -30,7 +30,7 @@ public partial class MainWindow : Window
     async void RunRenderAfterAppActivation(Render r){
         while(!IsActive) await Task.Delay(10);
         r.RenderStuff();
-        r.ComputeStuff();
+        Task.Run(r.ComputeStuff);
         OnKeyDownEvent += r.OnKeyDown;
     }
     protected override void OnKeyDown(KeyEventArgs e)

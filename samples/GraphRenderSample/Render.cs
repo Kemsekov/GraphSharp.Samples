@@ -17,22 +17,33 @@ public class Render
     public Graph Graph;
     public ArgumentsHandler Argz { get; }
     public GraphDrawer<Node, Edge> Drawer { get; private set; }
-
+    public CanvasShapeDrawer CanvasDrawer { get; }
+    public float EdgesLengthSum { get; private set; }
+    public float Change = 1;
     int[] fixedPoints;
-    IDictionary<int,Vector2> Acceleration;
+    IDictionary<int, Vector2> Acceleration;
     void Init()
     {
 
     }
+    bool Done = false;
     void DoStuff()
     {
+        if(Done) return;
+        var edgesLengthSum = EdgesLengthSum;
+        EdgesLengthSum = GetEdgesLengthSum();
+        Change = Math.Abs(edgesLengthSum-EdgesLengthSum);
+        if(Change<float.Epsilon){
+            Done = true;
+            System.Console.WriteLine("Done!");
+            return;
+        }
         var nodes = Graph.Nodes;
         var edges = Graph.Edges;
-        Helpers.NormalizeEdgesWeights(Graph.Edges);
-
+        var averageNodeDistance = edges.Average(x=>(nodes[x.SourceId].Position-nodes[x.TargetId].Position).Length());
         Parallel.ForEach(nodes, n =>
         {
-            if(fixedPoints.Contains(n.Id)) return;
+            if (fixedPoints.Contains(n.Id)) return;
             Vector2 direction = new(0, 0);
             var outEdges = edges.OutEdges(n.Id);
             var inEdges = edges.InEdges(n.Id);
@@ -47,82 +58,91 @@ public class Render
                 direction += dir;
             }
             Acceleration[n.Id] += direction;
+            n.Position += direction / edges.Degree(n.Id);
         });
 
-        foreach(var n in Graph.Nodes){
-            var shift = Argz.computeIntervalMilliseconds*Acceleration[n.Id]/1000;
-            // var shift = Acceleration[n.Id];
+        Parallel.ForEach(nodes, n =>
+        {
+            var accel = Acceleration[n.Id];
+            var shift = accel * Argz.computeIntervalMilliseconds / 1000;
             n.Position += shift;
-            Acceleration[n.Id]*=0.99f;
-        }
+            Acceleration[n.Id] *=(1-averageNodeDistance);
+        });
     }
 
     public Render(Canvas canvas)
     {
         Canvas = canvas;
-        Acceleration = new ConcurrentDictionary<int,Vector2>();
+        Acceleration = new ConcurrentDictionary<int, Vector2>();
         fixedPoints = new int[0];
         ArgumentsHandler Argz = new("settings.json");
         this.Argz = Argz;
         this.Graph = Helpers.CreateGraph(Argz);
         Graph.Do.DelaunayTriangulation();
         // Graph.Do.ConnectNodes(6);
-        FindFixedPoints(3);
-
-        foreach(var n in Graph.Nodes){
-            Acceleration[n.Id] = new(0,0);
+        foreach (var n in Graph.Nodes)
+        {
+            Acceleration[n.Id] = new(0, 0);
         }
-
-
+        Graph.Do.SetNodesPositions(x => new(Random.Shared.NextSingle(), Random.Shared.NextSingle()));
+        FindFixedPoints(5);
         Helpers.NormalizeNodePositions(Graph.Nodes);
+        var drawer = new CanvasShapeDrawer(Canvas);
+        var graphDrawer = new GraphDrawer<Node, Edge>(Graph, drawer, 1000);
+        this.Drawer = graphDrawer;
+        this.CanvasDrawer = drawer;
     }
     public async void RenderStuff()
     {
-        var drawer = new CanvasShapeDrawer(Canvas);
-        var graphDrawer = new GraphDrawer<Node, Edge>(Graph, drawer,1000);
-        this.Drawer = graphDrawer;
         while (true)
         {
-            graphDrawer.Clear(System.Drawing.Color.Empty);
-            graphDrawer.DrawEdges(Graph.Edges, Argz.thickness);
-            // graphDrawer.DrawDirections(Graph.Edges,Argz.thickness,Argz.directionLength,System.Drawing.Color.Orange);
-            graphDrawer.DrawNodes(Graph.Nodes,Argz.nodeSize);
-            graphDrawer.DrawNodes(fixedPoints.Select(x=>Graph.Nodes[x]),Argz.nodeSize);
-            graphDrawer.DrawNodeIds(Graph.Nodes,System.Drawing.Color.Azure,Argz.fontSize);
-            drawer.DrawText($"{GetEdgesLengthSum().ToString("0.00")} sum of edges length",new(700,50),System.Drawing.Color.Azure,20);
-            drawer.Dispatch();
+            Drawer.Clear(System.Drawing.Color.Empty);
+            Drawer.DrawEdges(Graph.Edges, Argz.thickness);
+            // Drawer.DrawDirections(Graph.Edges, Argz.thickness, Argz.directionLength, System.Drawing.Color.Orange);
+            // Drawer.DrawNodes(Graph.Nodes, Argz.nodeSize);
+            Drawer.DrawNodes(fixedPoints.Select(x => Graph.Nodes[x]), Argz.nodeSize);
+            // Drawer.DrawNodeIds(Graph.Nodes, System.Drawing.Color.Azure, Argz.fontSize);
+            CanvasDrawer.DrawText($"{EdgesLengthSum.ToString("0.00")} sum of edges length", new(700, 50), System.Drawing.Color.Azure, 20);
+            CanvasDrawer.Dispatch();
             await Task.Delay(Argz.renderIntervalMilliseconds);
         }
 
     }
 
     float shift = 0.1f;
-    public void OnKeyDown(KeyEventArgs e){
-        
-        switch(e.Key){
+    public void OnKeyDown(KeyEventArgs e)
+    {
+
+        switch (e.Key)
+        {
             case Key.A:
-                this.Drawer.XShift+=shift;
-            break;
+                this.Drawer.XShift += shift / this.Drawer.SizeMult;
+                break;
             case Key.D:
-                this.Drawer.XShift-=shift;
-            break;
+                this.Drawer.XShift -= shift / this.Drawer.SizeMult;
+                break;
             case Key.W:
-                this.Drawer.YShift+=shift;
-            break;
+                this.Drawer.YShift += shift / this.Drawer.SizeMult;
+                break;
             case Key.S:
-                this.Drawer.YShift-=shift;
-            break;
+                this.Drawer.YShift -= shift / this.Drawer.SizeMult;
+                break;
             case Key.Up:
-                this.Drawer.SizeMult+=shift;
-            break;
+                this.Drawer.XShift -= shift / this.Drawer.SizeMult/2;
+                this.Drawer.YShift -= shift / this.Drawer.SizeMult/2;
+                this.Drawer.SizeMult = this.Drawer.SizeMult*(1+shift);
+
+                break;
             case Key.Down:
-                this.Drawer.SizeMult-=shift;
-            break;
+                this.Drawer.SizeMult = this.Drawer.SizeMult/(1+shift);
+                this.Drawer.XShift += shift / this.Drawer.SizeMult/2;
+                this.Drawer.YShift += shift / this.Drawer.SizeMult/2;
+                break;
             case Key.R:
-                this.Drawer.SizeMult=1;
-                this.Drawer.XShift=0;
-                this.Drawer.YShift=0;
-            break;
+                this.Drawer.SizeMult = 1;
+                this.Drawer.XShift = 0;
+                this.Drawer.YShift = 0;
+                break;
         }
     }
     public async void ComputeStuff()
@@ -133,31 +153,38 @@ public class Render
             await Task.Delay(Argz.computeIntervalMilliseconds);
         }
     }
-    public IList<Vector2> GenerateCoordinatesFor(int n){
+    public IList<Vector2> GenerateCoordinatesFor(int n)
+    {
         var coords = new List<Vector2>();
-        var step = 2.0f*MathF.PI/(n-1);
+        var step = 2.0f * MathF.PI / (n - 1);
         var value = step;
-        for(int i = 0;i<n;i++){
-            coords.Add(new Vector2(MathF.Cos(value),MathF.Sin(value)));
-            value+=step;
+        for (int i = 0; i < n; i++)
+        {
+            coords.Add(new Vector2(MathF.Cos(value), MathF.Sin(value)));
+            value += step;
         }
         return coords;
     }
-    public void FindFixedPoints(int count){
+    public void FindFixedPoints(int count)
+    {
         count += 1;
-        foreach(var e in Graph.Edges){
-            var p = Graph.Do.FindAnyPath(e.TargetId,e.SourceId,x=>!x.Equals(e));
-            if(p.Count==count){
-                fixedPoints = p.Select(x=>x.Id).ToArray();
+        foreach (var e in Graph.Edges)
+        {
+            var p = Graph.Do.FindAnyPath(e.TargetId, e.SourceId, x => !x.Equals(e));
+            if (p.Count == count)
+            {
+                fixedPoints = p.Select(x => x.Id).ToArray();
                 break;
             }
         }
-        foreach(var n in fixedPoints.Zip(GenerateCoordinatesFor(fixedPoints.Length))){
+        foreach (var n in fixedPoints.Zip(GenerateCoordinatesFor(fixedPoints.Length)))
+        {
             Graph.Nodes[n.First].Color = System.Drawing.Color.Orange;
-            Graph.Nodes[n.First].Position = n.Second*100;
+            Graph.Nodes[n.First].Position = n.Second;
         }
     }
-    float GetEdgesLengthSum(){
-        return Graph.Edges.Sum(x=>(Graph.Nodes[x.SourceId].Position-Graph.Nodes[x.TargetId].Position).Length());
+    float GetEdgesLengthSum()
+    {
+        return Graph.Edges.Sum(x => (Graph.Nodes[x.SourceId].Position - Graph.Nodes[x.TargetId].Position).Length());
     }
 }
