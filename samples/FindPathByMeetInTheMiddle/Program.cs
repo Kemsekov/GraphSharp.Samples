@@ -3,8 +3,7 @@ using GraphSharp;
 using GraphSharp.Graphs;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
-//this program showing how to find the shortest path between two nodes
-//by summing and comparing sum of visited path
+//this program showing how meet in the middle path finder work
 
 
 ArgumentsHandler argz = new("settings.json");

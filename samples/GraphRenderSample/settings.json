@@ -1,7 +1,7 @@
 {
     "nodeSeed" : 9,
     "connectionSeed" : 4,
-    "nodesCount" : 500,
+    "nodesCount" : 1000,
     "node1" : 32,
     "node2" : 63,
     "minEdges" : 2,
@@ -12,6 +12,6 @@
     "thickness" : 0.002,
     "fontSize" : 0.01,
     "directionLength" : 0.09,
-    "renderIntervalMilliseconds" : 33,
-    "computeIntervalMilliseconds" : 10
+    "renderIntervalMilliseconds" : 66,
+    "computeIntervalMilliseconds" : 0
 }

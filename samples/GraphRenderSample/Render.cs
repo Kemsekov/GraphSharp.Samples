@@ -84,7 +84,7 @@ public class Render
         {
             Acceleration[n.Id] = new(0, 0);
         }
-        Graph.Do.SetNodesPositions(x => new(Random.Shared.NextSingle(), Random.Shared.NextSingle()));
+        Graph.Nodes.SetPositionsToAll(x => new(Random.Shared.NextSingle(), Random.Shared.NextSingle()));
         FindFixedPoints(5);
         Helpers.NormalizeNodePositions(Graph.Nodes);
         var drawer = new CanvasShapeDrawer(Canvas);
@@ -147,8 +147,9 @@ public class Render
     }
     public async void ComputeStuff()
     {
-        while (true)
+        while (!Done)
         {
+            
             DoStuff();
             await Task.Delay(Argz.computeIntervalMilliseconds);
         }
