@@ -4,7 +4,7 @@ using GraphSharp;
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-graph.Do.DelaunayTriangulation();
+// graph.Do.DelaunayTriangulation();
 IList<Edge> tree = new List<Edge>();
 Helpers.MeasureTime(() =>
 {

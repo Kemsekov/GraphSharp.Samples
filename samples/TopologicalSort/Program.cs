@@ -4,12 +4,13 @@ using GraphSharp.Visitors;
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-graph.Do.MakeUndirected();
-graph.Do.MakeSources(65,77,39,40);
+graph.Do.MakeBidirected();
+var sources = new int[]{65,77,39,40};
+graph.Do.MakeSources(sources);
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Doing topological sort...");
-    graph.Do.TopologicalSort();
+    graph.Do.TopologicalSort().ApplyTopologicalSort();
 });
 
 foreach(var component in graph.Do.FindComponents().components){
@@ -24,7 +25,7 @@ Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
     drawer.DrawDirections(graph.Edges,argz.thickness,argz.directionLength,Color.CadetBlue);
-    drawer.DrawNodesParallel(graph.Nodes,argz.nodeSize);
-    drawer.DrawNodeIds(graph.Nodes,Color.Azure,argz.fontSize);
+    drawer.DrawNodesParallel(sources.Select(x=>graph.Nodes[x]),argz.nodeSize);
+    drawer.DrawNodeIds(sources.Select(x=>graph.Nodes[x]),Color.Azure,argz.fontSize);
 });
 System.Console.WriteLine("Done");

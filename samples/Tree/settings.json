@@ -4,7 +4,7 @@
     "nodesCount" : 1000,
     "node1" : 32,
     "node2" : 63,
-    "minEdges" : 0,
+    "minEdges" : 4,
     "maxEdges" : 10,
     "steps" : 3000,
     "outputResolution" : 2000,

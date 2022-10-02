@@ -132,7 +132,7 @@ public static class Helpers
 
             result = new Graph(id => new(id) { Position = new(rand.NextSingle(), rand.NextSingle()) }, (n1, n2) => new(n1, n2) { Weight = (n1.Position - n2.Position).Length() });
             result.Configuration.Rand = conRand;
-            result.CreateNodes(argz.nodesCount);
+            result.Do.CreateNodes(argz.nodesCount);
             result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges);
         });
         return result ?? throw new Exception("Create node failure"); ;

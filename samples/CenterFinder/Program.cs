@@ -13,7 +13,7 @@ using SampleBase;
 
 ArgumentsHandler argz = new("settings.json");
 var graph = Helpers.CreateGraph(argz);
-graph.Do.MakeUndirected();
+graph.Do.MakeBidirected();
 // graph.Do.DelaunayTriangulation();
 Helpers.MeasureTime(() =>
 {

@@ -26,7 +26,7 @@ GraphSharp.Graphs.Graph CreateSampleGraph()
     var graph = Helpers.CreateGraph(argz);
     graph.Edges.Clear();
 
-    graph.CreateNodes(8);
+    graph.Do.CreateNodes(8);
 
     graph.Nodes[0].Position = new(0.1f, 0.1f);
     graph.Nodes[2].Position = new(0.1f, 0.7f);
