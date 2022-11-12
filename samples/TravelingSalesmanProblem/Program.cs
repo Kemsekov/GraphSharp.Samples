@@ -20,7 +20,8 @@ double cost = 0;
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Solving traveling salesman problem...");
-    var path1 = graph.Do.TspCheapestLink((n1,n2)=>(n1.Position-n2.Position).Length());
+    // var path1 = graph.Do.TspCheapestLink((n1,n2)=>(n1.Position-n2.Position).Length());
+    var path1 = graph.Do.TspCheapestLinkOnPositions(x=>x.Position);
     cost = path1.TourCost;
     System.Console.WriteLine("Rate " + cost / low);
     path = path1.Tour;
