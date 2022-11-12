@@ -12,7 +12,7 @@ pageRank.Damping = 0.85;
 pageRank.Tolerance = 0.001;
 pageRank.Compute();
 var ranks = pageRank.Ranks;
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
+Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);
 Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
@@ -23,4 +23,4 @@ Helpers.CreateImage(argz, graph, drawer =>
         var coeff = ranks[n];
         drawer.DrawNode(n,(double)(argz.nodeSize*coeff));
     }
-});
+},x=>x.Position);

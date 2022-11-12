@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "algorithm", "ShortestPathFi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StronglyComponentsFinder", "StronglyComponentsFinder\StronglyComponentsFinder.csproj", "{62A9946E-7B09-4EA6-98DA-F3F62D56015E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PageRank", "PageRank\PageRank.csproj", "{E8591081-92AE-4A9B-B028-EB3181479B84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelingSalesmanProblem", "TravelingSalesmanProblem\TravelingSalesmanProblem.csproj", "{185B4CB6-F259-443C-8B55-77626C9CE431}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,5 +124,13 @@ Global
 		{62A9946E-7B09-4EA6-98DA-F3F62D56015E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62A9946E-7B09-4EA6-98DA-F3F62D56015E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62A9946E-7B09-4EA6-98DA-F3F62D56015E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8591081-92AE-4A9B-B028-EB3181479B84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8591081-92AE-4A9B-B028-EB3181479B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8591081-92AE-4A9B-B028-EB3181479B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8591081-92AE-4A9B-B028-EB3181479B84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{185B4CB6-F259-443C-8B55-77626C9CE431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{185B4CB6-F259-443C-8B55-77626C9CE431}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{185B4CB6-F259-443C-8B55-77626C9CE431}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{185B4CB6-F259-443C-8B55-77626C9CE431}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

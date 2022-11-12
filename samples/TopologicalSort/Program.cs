@@ -10,7 +10,7 @@ graph.Do.MakeSources(sources);
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Doing topological sort...");
-    graph.Do.TopologicalSort().ApplyTopologicalSort((n,pos)=>n.Position = pos);
+    graph.Do.TopologicalSort().ApplyTopologicalSort((n,pos)=>n.Position = pos,x=>x.Position.Y);
 });
 
 foreach(var component in graph.Do.FindComponents().Components){
