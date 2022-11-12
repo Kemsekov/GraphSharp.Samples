@@ -10,12 +10,12 @@ public class ArgumentsHandler
     public int minEdges = 1;
     public int maxEdges = 4;
     public int steps = 100;
-    public float thickness = 0.01f;
+    public double thickness = 0.01f;
     public int outputResolution = 1500;
-    public float nodeSize = 0.015f;
-    public float fontSize = 0.012f;
+    public double nodeSize = 0.015f;
+    public double fontSize = 0.012f;
     public string filename = "example.jpg";
-    public float directionLength = 0.1f;
+    public double directionLength = 0.1f;
     /// <summary>
     /// Desired render intervals
     /// </summary>

@@ -48,7 +48,7 @@ public class CanvasShapeDrawer : GraphSharp.GraphDrawer.IShapeDrawer
         return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B)); ;
     }
 
-    void SetSize(Layoutable obj, float width, float height)
+    void SetSize(Layoutable obj, double width, double height)
     {
         obj.Width = width;
         obj.Height = height;
@@ -67,7 +67,7 @@ public class CanvasShapeDrawer : GraphSharp.GraphDrawer.IShapeDrawer
         shape.Fill = ToBrush(color);
     }
 
-    public void DrawText(string text, Vector2 position, System.Drawing.Color color, float fontSize)
+    public void DrawText(string text, Vector2 position, System.Drawing.Color color, double fontSize)
     {
         var textBox = textBlocks.Get();
         textBox.FontSize = fontSize;
@@ -77,17 +77,17 @@ public class CanvasShapeDrawer : GraphSharp.GraphDrawer.IShapeDrawer
         toAdd.Add(textBox);
     }
 
-    public void FillEllipse(Vector2 position, float width, float height, System.Drawing.Color color)
+    public void FillEllipse(Vector2 position, double width, double height, System.Drawing.Color color)
     {
         var el = ellipses.Get();
-        position = new Vector2(position.X - width / 2, position.Y - height / 2);
+        position = new Vector2(position.X - ((float)width) / 2, position.Y - ((float)height) / 2);
         SetPosition(el, position);
         SetSize(el, width, height);
         SetColor(el, color);
         toAdd.Add(el);
     }
 
-    public void DrawLine(Vector2 start, Vector2 end, System.Drawing.Color color, float thickness)
+    public void DrawLine(Vector2 start, Vector2 end, System.Drawing.Color color, double thickness)
     {
         var line = lines.Get();
         line.StrokeThickness = thickness;

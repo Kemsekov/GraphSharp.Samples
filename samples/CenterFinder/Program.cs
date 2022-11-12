@@ -44,4 +44,4 @@ Helpers.CreateImage(argz, graph, drawer =>
     drawer.DrawNodesParallel(graph.Nodes, argz.nodeSize);
     // drawer.DrawNodeIds(graph.Nodes, Color.Wheat, argz.fontSize);
 
-});
+},x=>x.Position);

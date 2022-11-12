@@ -19,7 +19,7 @@ Helpers.CreateImage(argz, graph, drawer =>
     drawer.DrawEdges(graph.Edges, argz.thickness);
     drawer.DrawNodes(graph.Nodes, argz.nodeSize);
     drawer.DrawNodeIds(graph.Nodes, Color.White, argz.fontSize);
-});
+}, x=>x.Position);
 
 GraphSharp.Graphs.Graph CreateSampleGraph()
 {

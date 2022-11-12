@@ -30,7 +30,10 @@ public partial class MainWindow : Window
     async void RunRenderAfterAppActivation(Render r){
         while(!IsActive) await Task.Delay(10);
         r.RenderStuff();
+        #pragma warning disable
+        //this non-awaiting call is intended
         Task.Run(r.ComputeStuff);
+        #pragma warning enable
         OnKeyDownEvent += r.OnKeyDown;
     }
     protected override void OnKeyDown(KeyEventArgs e)

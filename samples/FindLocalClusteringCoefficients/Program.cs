@@ -11,9 +11,9 @@ using SampleBase;
 
 ArgumentsHandler argz = new("settings.json");
 var graph = Helpers.CreateGraph(argz);
-graph.Do.DelaunayTriangulation();
+graph.Do.DelaunayTriangulation(x=>x.Position);
 graph.Do.MakeBidirected();
-var coeffs = new float[0];
+var coeffs = new double[0];
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Finding local clustering coefficients");
@@ -26,7 +26,7 @@ coeffs.Select((value, index) =>
     return 1;
 }).ToArray();
 
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
+Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);
 Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
@@ -34,4 +34,4 @@ Helpers.CreateImage(argz, graph, drawer =>
     foreach(var n in graph.Nodes)
         drawer.DrawNode(n, argz.nodeSize*n.Weight);
     drawer.DrawNodeIds(graph.Nodes, Color.Wheat, argz.fontSize);
-});
+},x=>x.Position);

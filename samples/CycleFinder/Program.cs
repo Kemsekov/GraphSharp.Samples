@@ -7,7 +7,7 @@ using GraphSharp.Graphs;
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-graph.Do.DelaunayTriangulation();
+graph.Do.DelaunayTriangulation(x=>x.Position);
 graph.Do.MakeBidirected();
 graph.CheckForIntegrityOfSimpleGraph();
 var cycles = Enumerable.Empty<IList<Node>>();
@@ -25,7 +25,7 @@ foreach (var c in cycles)
 
 var orderedCycles = cycles.OrderBy(x => x.Count).ToList();
 
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
+Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);
 Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
@@ -38,4 +38,4 @@ Helpers.CreateImage(argz, graph, drawer =>
         var color = Color.FromArgb(255, Random.Shared.Next(256), Random.Shared.Next(256));
         drawer.DrawPath(cycle,color,argz.thickness);
     }
-});
+},x=>x.Position);

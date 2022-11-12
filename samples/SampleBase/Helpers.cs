@@ -77,16 +77,16 @@ public static class Helpers
             n.Position /= maxDiff;
         }
     }
-    public static void ShiftNodesToFitInTheImage<TNode>(IEnumerable<TNode> nodes)
-    where TNode : INode, IPositioned
+    public static void ShiftNodesToFitInTheImage<TNode>(IEnumerable<TNode> nodes, Func<TNode,Vector2> getPos, Action<TNode,Vector2> setPos)
+    where TNode : INode
     {
         foreach (var n in nodes)
         {
-            var newPos = new Vector2(n.Position.X * 0.9f + 0.05f, n.Position.Y * 0.9f + 0.05f);
-            n.Position = newPos;
+            var newPos = new Vector2(getPos(n).X * 0.9f + 0.05f, getPos(n).Y * 0.9f + 0.05f);
+            setPos(n, newPos);
         }
     }
-    public static void CreateImage<TNode, TEdge>(ArgumentsHandler argz, IGraph<TNode, TEdge> graph, Action<GraphDrawer<TNode, TEdge>> draw)
+    public static void CreateImage<TNode, TEdge>(ArgumentsHandler argz, IGraph<TNode, TEdge> graph, Action<GraphDrawer<TNode, TEdge>> draw,Func<TNode,Vector2> getPos)
     where TNode : INode
     where TEdge : IEdge
     {
@@ -98,27 +98,12 @@ public static class Helpers
             image.Mutate(x =>
             {
                 var shapeDrawer = new ImageSharpShapeDrawer(x, image, argz.fontSize);
-                var drawer = new GraphDrawer<TNode, TEdge>(graph, shapeDrawer,argz.outputResolution);
+                var drawer = new GraphDrawer<TNode, TEdge>(graph, shapeDrawer,argz.outputResolution,getPos);
                 draw(drawer);
             });
             System.Console.WriteLine("Saving image...");
             image.SaveAsJpeg(argz.filename);
         });
-    }
-    public static float ComputePathLength<TNode>(IEnumerable<TNode> path)
-    where TNode : INode, IPositioned
-    {
-        float res = 0;
-        var current = path.GetEnumerator();
-        if (!current.MoveNext())
-            return 0;
-        var previous = current.Current;
-        while (current.MoveNext())
-        {
-            res += (float)Vector2.Distance(previous.Position, current.Current.Position);
-            previous = current.Current;
-        }
-        return res;
     }
     public static Graph CreateGraph(ArgumentsHandler argz)
     {
@@ -133,7 +118,7 @@ public static class Helpers
             result = new Graph(id => new(id) { Position = new(rand.NextSingle(), rand.NextSingle()) }, (n1, n2) => new(n1, n2) { Weight = (n1.Position - n2.Position).Length() });
             result.Configuration.Rand = conRand;
             result.Do.CreateNodes(argz.nodesCount);
-            result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges);
+            result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges,(n1,n2)=>(n1.Position-n2.Position).Length());
         });
         return result ?? throw new Exception("Create node failure"); ;
     }

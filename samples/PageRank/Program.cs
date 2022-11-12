@@ -21,6 +21,6 @@ Helpers.CreateImage(argz, graph, drawer =>
     
     foreach(var n in graph.Nodes){
         var coeff = ranks[n];
-        drawer.DrawNode(n,(float)(argz.nodeSize*coeff));
+        drawer.DrawNode(n,(double)(argz.nodeSize*coeff));
     }
 });

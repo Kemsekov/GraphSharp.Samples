@@ -11,27 +11,24 @@ ArgumentsHandler argz = new("settings.json");
 var graph = Helpers.CreateGraph(argz);
 graph.Do.DelaunayTriangulation();
 
-var mst = graph.Do.FindSpanningTree();
+var mst = graph.Do.FindSpanningForestKruskal();
 var low = mst.Sum(x=>x.Weight);
 
-IEdgeSource<Edge> edges = new DefaultEdgeSource<Edge>();
-IList<Node> path = new List<Node>();
+IEnumerable<Node> path = new List<Node>();
+double cost = 0;
+
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Solving traveling salesman problem...");
-    (edges, path) = graph.Do.TravelingSalesmanProblem();
+    (path, cost) = graph.Do.TspCheapestLink((n1,n2)=>(n1.Position-n2.Position).Length());
+    System.Console.WriteLine("Rate " + cost / low);
 });
-
-
-
-foreach (var e in edges)
+Helpers.MeasureTime(() =>
 {
-    e.Color = Color.Orange;
-}
-
-//we can find how good resulting hamiltonian cycle is by dividing 
-//length of cycle by length of minimal spanning tree
-System.Console.WriteLine("Rate " + edges.Sum(x => x.Weight) / low);
+    System.Console.WriteLine("Improving solution by opt2");
+    (path, cost) = graph.Do.TspOpt2(path,cost);
+    System.Console.WriteLine("Rate " + cost / low);
+});
 
 
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
@@ -41,5 +38,4 @@ Helpers.CreateImage(argz, graph, drawer =>
     // drawer.DrawEdgesParallel(graph.Edges, argz.thickness);
     drawer.DrawPath(path,Color.Orange,argz.thickness);
     drawer.DrawNodesParallel(graph.Nodes, argz.nodeSize);
-    drawer.DrawEdgesParallel(edges, argz.thickness);
 });

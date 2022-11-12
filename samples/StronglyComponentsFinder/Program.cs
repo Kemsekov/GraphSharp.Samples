@@ -24,4 +24,4 @@ Helpers.CreateImage(argz, graph, drawer =>
     drawer.DrawEdgesParallel(graph.Edges, argz.thickness);
     drawer.DrawDirectionsParallel(graph.Edges,argz.thickness,argz.directionLength,Color.Orange);
     drawer.DrawNodesParallel(graph.Nodes, argz.nodeSize);
-});
+},x=>x.Position);

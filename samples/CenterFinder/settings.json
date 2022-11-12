@@ -1,11 +1,11 @@
 {
     "nodeSeed" : 9,
     "connectionSeed" : 4,
-    "nodesCount" : 1000,
+    "nodesCount" : 1500,
     "node1" : 32,
     "node2" : 63,
     "minEdges" : 5,
-    "maxEdges" : 12,
+    "maxEdges" : 15,
     "steps" : 3000,
     "outputResolution" : 2000,
     "nodeSize" : 0.005,

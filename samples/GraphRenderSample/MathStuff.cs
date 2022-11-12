@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 public static class MathStuff
 {
-    public static float smoothstep(float edge0, float edge1, float x)
+    public static double smoothstep(double edge0, double edge1, double x)
     {
         // Scale, bias and saturate x to 0..1 range
         x = Math.Clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);

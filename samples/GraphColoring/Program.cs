@@ -73,4 +73,4 @@ Helpers.CreateImage(argz, graph, drawer =>
     drawer.Clear(Color.Black);
     drawer.DrawEdges(graph.Edges, argz.thickness);
     drawer.DrawNodes(graph.Nodes, argz.nodeSize);
-});
+},x=>x.Position);

@@ -8,7 +8,7 @@ using GraphSharp.Graphs;
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-graph.Do.DelaunayTriangulation();
+graph.Do.DelaunayTriangulation(x=>x.Position);
 
 var startNode = argz.node1 % graph.Nodes.Count;
 var endNode = argz.node2 % graph.Nodes.Count;
@@ -32,7 +32,7 @@ Helpers.MeasureTime(()=>{
 graph.ValidatePath(path);
 
 
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes);
+Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);
 Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
@@ -40,5 +40,5 @@ Helpers.CreateImage(argz,graph,drawer=>{
     {
         drawer.DrawPath(path,Color.Wheat,argz.thickness);
     }
-});
+},x=>x.Position);
 

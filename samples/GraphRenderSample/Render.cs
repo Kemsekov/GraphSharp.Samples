@@ -18,8 +18,8 @@ public class Render
     public ArgumentsHandler Argz { get; }
     public GraphDrawer<Node, Edge> Drawer { get; private set; }
     public CanvasShapeDrawer CanvasDrawer { get; }
-    public float EdgesLengthSum { get; private set; }
-    public float Change = 1;
+    public double EdgesLengthSum { get; private set; }
+    public double Change = 1;
     int[] fixedPoints;
     IDictionary<int, Vector2> Acceleration;
     void Init()
@@ -33,7 +33,7 @@ public class Render
         var edgesLengthSum = EdgesLengthSum;
         EdgesLengthSum = GetEdgesLengthSum();
         Change = Math.Abs(edgesLengthSum-EdgesLengthSum);
-        if(Change<float.Epsilon){
+        if(Change<double.Epsilon){
             Done = true;
             System.Console.WriteLine("Done!");
             return;
@@ -78,17 +78,18 @@ public class Render
         ArgumentsHandler Argz = new("settings.json");
         this.Argz = Argz;
         this.Graph = Helpers.CreateGraph(Argz);
-        Graph.Do.DelaunayTriangulation();
+        Graph.Do.DelaunayTriangulation(x=>x.Position);
         // Graph.Do.ConnectNodes(6);
         foreach (var n in Graph.Nodes)
         {
             Acceleration[n.Id] = new(0, 0);
         }
-        Graph.Nodes.SetPositionsToAll(x => new(Random.Shared.NextSingle(), Random.Shared.NextSingle()));
+        foreach(var n in Graph.Nodes) 
+            n.Position = new(Random.Shared.NextSingle(), Random.Shared.NextSingle());
         FindFixedPoints(5);
         Helpers.NormalizeNodePositions(Graph.Nodes);
         var drawer = new CanvasShapeDrawer(Canvas);
-        var graphDrawer = new GraphDrawer<Node, Edge>(Graph, drawer, 1000);
+        var graphDrawer = new GraphDrawer<Node, Edge>(Graph, drawer, 1000,x=>x.Position);
         this.Drawer = graphDrawer;
         this.CanvasDrawer = drawer;
     }
@@ -109,7 +110,7 @@ public class Render
 
     }
 
-    float shift = 0.1f;
+    double shift = 0.1f;
     public void OnKeyDown(KeyEventArgs e)
     {
 
@@ -171,8 +172,8 @@ public class Render
         count += 1;
         foreach (var e in Graph.Edges)
         {
-            var p = Graph.Do.FindAnyPath(e.TargetId, e.SourceId, x => !x.Equals(e));
-            if (p.Count == count)
+            var p = Graph.Do.FindAnyPath(e.TargetId, e.SourceId, x => !x.Equals(e)).Path;
+            if (p.Count() == count)
             {
                 fixedPoints = p.Select(x => x.Id).ToArray();
                 break;
@@ -184,7 +185,7 @@ public class Render
             Graph.Nodes[n.First].Position = n.Second;
         }
     }
-    float GetEdgesLengthSum()
+    double GetEdgesLengthSum()
     {
         return Graph.Edges.Sum(x => (Graph.Nodes[x.SourceId].Position - Graph.Nodes[x.TargetId].Position).Length());
     }
