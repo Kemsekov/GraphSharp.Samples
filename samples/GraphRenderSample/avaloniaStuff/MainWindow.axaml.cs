@@ -33,7 +33,7 @@ public partial class MainWindow : Window
         #pragma warning disable
         //this non-awaiting call is intended
         Task.Run(r.ComputeStuff);
-        #pragma warning enable
+        #pragma warning restore
         OnKeyDownEvent += r.OnKeyDown;
     }
     protected override void OnKeyDown(KeyEventArgs e)
