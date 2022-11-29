@@ -25,10 +25,9 @@ Helpers.CreateImage(argz, graph, drawer =>
     var capacities = maxFlow.Capacities;
     drawer.Clear(Color.Black);
     foreach(var e in graph.Edges){
-        var thickness = capacities(new(e));
-        if(thickness==0)
-            continue;
-        drawer.DrawEdge(e,thickness/40);
+        //the more red edge is, the more capacity it has
+        var thickness = Math.Min(capacities(new(e))/maxFlow.MaxFlow,1);
+        drawer.DrawEdge(e,argz.thickness,Color.FromArgb((int)(thickness*255),0,0));
     }
     // drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
     // drawer.DrawDirectionsParallel(graph.Edges, argz.thickness, argz.directionLength, Color.Orange);
