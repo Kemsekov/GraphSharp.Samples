@@ -15,7 +15,7 @@ graph.Do.TopologicalSort(65).ApplyTopologicalSort((node,pos)=>node.Position = po
 graph.Do.MakeSources(65);
 //----
 
-//find a max flow from source 65 to sink 39
+//find a max flow from source 65 to sink 39.
 var maxFlow = graph.Do.MaxFlowEdmondsKarp(65,39);
 System.Console.WriteLine("Max flow is "+maxFlow.MaxFlow);
 
@@ -26,11 +26,9 @@ Helpers.CreateImage(argz, graph, drawer =>
     drawer.Clear(Color.Black);
     foreach(var e in graph.Edges){
         //the more red edge is, the more capacity it has
-        var thickness = Math.Min(capacities(new(e))/maxFlow.MaxFlow,1);
+        var thickness = Math.Min(capacities(e)/maxFlow.MaxFlow,1);
         drawer.DrawEdge(e,argz.thickness,Color.FromArgb((int)(thickness*255),0,0));
     }
-    // drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
-    // drawer.DrawDirectionsParallel(graph.Edges, argz.thickness, argz.directionLength, Color.Orange);
     drawer.DrawNodeId(graph.Nodes[65],Color.Azure,argz.fontSize);
     drawer.DrawNodeId(graph.Nodes[39],Color.Azure,argz.fontSize);
 },x=>x.Position);
