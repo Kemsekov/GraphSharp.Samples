@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using GraphSharp;
+using GraphSharp.Common;
 using GraphSharp.Graphs;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
@@ -18,39 +19,43 @@ IList<Node> path2 = new List<Node>();
 IList<Node> path3 = new List<Node>();
 IList<Node> path4 = new List<Node>();
 
-Helpers.MeasureTime(()=>{
-    System.Console.WriteLine("Finding path by meeting in the middle parallel (wheat)");
-    var p = graph.Do.FindPathByMeetInTheMiddleParallel(startNode,endNode);
-    path1 = p.Path.ToList();
-    System.Console.WriteLine($"Count of nodes in the path {path1.Count}");
-    System.Console.WriteLine($"Path length {p.Cost}");
-    graph.ValidatePath(path1);
-});
+var pathType = PathType.InEdges;
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Finding path by parallel any path finder (orange)");
-    var p = graph.Do.FindAnyPathParallel(startNode,endNode);
+    var p = graph.Do.FindAnyPathParallel(startNode,endNode,pathType: pathType);
     path2 = p.Path.ToList();
     System.Console.WriteLine($"Count of nodes in the path {path2.Count}");
     System.Console.WriteLine($"Path length {p.Cost}");
-    graph.ValidatePath(path2);
+    graph.ValidatePath(p);
 });
 
 Helpers.MeasureTime(()=>{
+    System.Console.WriteLine("Finding path by meeting in the middle parallel (wheat)");
+    var p = graph.Do.FindPathByMeetInTheMiddleParallel(startNode,endNode,undirected:false);
+    path1 = p.Path.ToList();
+    System.Console.WriteLine($"Count of nodes in the path {path1.Count}");
+    System.Console.WriteLine($"Path length {p.Cost}");
+    graph.ValidatePath(p);
+});
+
+
+Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Finding path by meet in the middle by parallel Dijkstra path finder (red)");
-    var p = graph.Do.FindPathByMeetInTheMiddleDijkstraParallel(startNode,endNode);
+    var p = graph.Do.FindPathByMeetInTheMiddleDijkstraParallel(startNode,endNode, undirected:false);
     path3 = p.Path.ToList();
     System.Console.WriteLine($"Count of nodes in the path {path3.Count}");
     System.Console.WriteLine($"Path length {p.Cost}");
-    graph.ValidatePath(path3);
+    graph.ValidatePath(p);
 });
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Finding path by  parallel Dijkstra path finder (green)");
-    path4 = graph.Do.FindShortestPathsDijkstra(startNode).GetPath(endNode);
+    var p = graph.Do.FindShortestPathsDijkstra(startNode,pathType:pathType).GetPath(endNode);
+    path4 = p.Path;
     System.Console.WriteLine($"Count of nodes in the path {path4.Count}");
-    System.Console.WriteLine($"Path length {graph.ComputePathCost(path4)}");
-    graph.ValidatePath(path4);
+    System.Console.WriteLine($"Path length {p.Cost}");
+    graph.ValidatePath(p);
 });
 
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);

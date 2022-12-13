@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using GraphSharp;
+using GraphSharp.Common;
 using GraphSharp.Graphs;
 //this program showing how to find the shortest path between two nodes
 //by summing and comparing sum of visited path
@@ -12,20 +13,20 @@ graph.Do.DelaunayTriangulation(x=>x.Position);
 
 var startNode = argz.node1 % graph.Nodes.Count;
 var endNode = argz.node2 % graph.Nodes.Count;
-IList<Node> path = new List<Node>();
+IPath<Node> path = default;
 double pathLength = 0;
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Finding all shortest paths parallel...");
     var shortestPathFinder = graph.Do.FindShortestPathsParallelDijkstra(startNode,x=>x.Weight);
-    path = shortestPathFinder.GetPath(endNode) ?? new List<Node>();
+    path = shortestPathFinder.GetPath(endNode);
     pathLength = shortestPathFinder.PathLength[endNode];
     System.Console.WriteLine($"Shortest path length : {pathLength}");
 });
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Finding all shortest paths...");
     var shortestPathFinder = graph.Do.FindShortestPathsDijkstra(startNode,x=>x.Weight);
-    path = shortestPathFinder.GetPath(endNode) ?? new List<Node>();
+    path = shortestPathFinder.GetPath(endNode);
     pathLength = shortestPathFinder.PathLength[endNode];
     System.Console.WriteLine($"Shortest path length : {pathLength}");
 });
