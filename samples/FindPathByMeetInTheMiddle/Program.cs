@@ -67,19 +67,19 @@ Helpers.CreateImage(argz,graph,drawer=>{
     drawer.DrawNode(graph.Nodes[endNode],argz.nodeSize);
     if (path1?.Count > 0)
     {
-        drawer.DrawPath(path1,Color.Wheat,argz.thickness);
+        drawer.DrawPath(path1,argz.thickness,Color.Wheat);
     }
     if (path2?.Count > 0)
     {
-        drawer.DrawPath(path2,Color.Orange,argz.thickness);
+        drawer.DrawPath(path2,argz.thickness,Color.Orange);
     }
     if (path3?.Count > 0)
     {
-        drawer.DrawPath(path3,Color.Red,argz.thickness);
+        drawer.DrawPath(path3,argz.thickness,Color.Red);
     }
     if (path4?.Count > 0)
     {
-        drawer.DrawPath(path4,Color.Green,argz.thickness);
+        drawer.DrawPath(path4,argz.thickness,Color.Green);
     }
 },x=>x.Position);
 

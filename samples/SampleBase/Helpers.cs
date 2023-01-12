@@ -113,8 +113,6 @@ public static class Helpers
             System.Console.WriteLine("Creating graph...");
             var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
             var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
-
-
             result = new Graph(id => new(id) { Position = new(rand.NextSingle(), rand.NextSingle()) }, (n1, n2) => new(n1, n2) { Weight = (n1.Position - n2.Position).Length() });
             result.Configuration.Rand = conRand;
             result.Do.CreateNodes(argz.nodesCount);

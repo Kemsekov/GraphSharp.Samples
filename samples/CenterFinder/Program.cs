@@ -17,7 +17,7 @@ var graph = Helpers.CreateGraph(argz);
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Finding center by approximation (orange)");
-    var c1 = graph.Do.TryFindCenterByApproximation(x=>1,false);
+    var c1 = graph.Do.TryFindCenterByApproximation(x=>1,true);
     System.Console.WriteLine($"Found {c1.center.Count()} center nodes with radius {c1.radius}");
     foreach(var n in c1.center){
         System.Console.WriteLine(n);
@@ -27,7 +27,7 @@ Helpers.MeasureTime(() =>
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Finding center by dijkstras (blue)");
-    var c2 = graph.Do.FindCenterByDijkstras(x=>1,false);
+    var c2 = graph.Do.FindCenterByDijkstras(x=>1,true);
     System.Console.WriteLine($"Found {c2.center.Count()} center nodes with radius {c2.radius}");
     foreach(var n in c2.center){
         System.Console.WriteLine(n);
