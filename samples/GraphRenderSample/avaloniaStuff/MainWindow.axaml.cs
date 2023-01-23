@@ -43,6 +43,11 @@ public partial class MainWindow : Window
         RenderApp.OnPointerPressed(e);
         base.OnPointerPressed(e);
     }
+    protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+    {
+        RenderApp.OnPointerWheelChanged(e);
+        base.OnPointerWheelChanged(e);
+    }
     protected override void OnKeyDown(KeyEventArgs e)
     {
         OnKeyDownEvent.Invoke(e);

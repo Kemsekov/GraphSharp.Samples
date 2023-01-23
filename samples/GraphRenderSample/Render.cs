@@ -157,7 +157,10 @@ public class Render
 
     internal void OnPointerPressed(PointerPressedEventArgs e)
     {
-        var pos = e.GetPosition(Canvas);
+        AddToCircle(e.GetPosition(Canvas));
+    }
+
+    void AddToCircle(Avalonia.Point pos){
         var vec = new Vector2();
         vec.X = (float)(pos.X / Drawer.Size);
         vec.Y = (float)(pos.Y / Drawer.Size);
@@ -184,27 +187,20 @@ public class Render
         });
 
         FillNewFixedPoints(oldFixedPoints.Last(),oldFixedPoints.First(),ref closest, newFixedPoints);
-        
+
         PlanarRender.ResetFixedPoints(newFixedPoints.ToArray());
-
-
 
         ResetColors();
         Done = false;
         Task.Run(ComputeStuff);
     }
 
-
-
     private void ResetColors()
     {
         Graph.Edges.SetColorToAll(Color.DarkViolet);
         Graph.Nodes.SetColorToAll(Color.Empty);
         ShowHideFixedPointsBorder();
-        foreach (var n in PlanarRender.FixedPoints)
-        {
-            Graph.Nodes[n].Color = Color.Orange;
-        }
+        
         PlanarRender.FixedPoints.Aggregate((n1, n2) =>
         {
             var intersections = Graph.Edges.Neighbors(n1).Intersect(Graph.Edges.Neighbors(n2)).ToList();
@@ -216,5 +212,10 @@ public class Render
             }
             return n2;
         });
+    }
+
+    internal void OnPointerWheelChanged(PointerWheelEventArgs e)
+    {
+        AddToCircle(e.GetPosition(Canvas));
     }
 }
