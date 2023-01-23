@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -18,10 +19,7 @@ public class Render
     public ArgumentsHandler Argz { get; }
     public GraphDrawer<Node, Edge> Drawer { get; private set; }
     public CanvasShapeDrawer CanvasDrawer { get; }
-    public double EdgesLengthSum { get; private set; }
-    public double Change = 1;
-    int[] fixedPoints;
-    IDictionary<int, Vector2> Acceleration;
+    public PlanarGraphRender<Node, Edge> PlanarRender { get; }
     void Init()
     {
 
@@ -29,67 +27,33 @@ public class Render
     bool Done = false;
     void DoStuff()
     {
-        if(Done) return;
-        var edgesLengthSum = EdgesLengthSum;
-        EdgesLengthSum = GetEdgesLengthSum();
-        Change = Math.Abs(edgesLengthSum-EdgesLengthSum);
-        if(Change<double.Epsilon){
-            Done = true;
-            System.Console.WriteLine("Done!");
+        if (Done)
+        {
             return;
         }
-        var nodes = Graph.Nodes;
-        var edges = Graph.Edges;
-        var averageNodeDistance = edges.Average(x=>(nodes[x.SourceId].Position-nodes[x.TargetId].Position).Length());
-        Parallel.ForEach(nodes, n =>
+        if (PlanarRender.ComputeStep())
         {
-            if (fixedPoints.Contains(n.Id)) return;
-            Vector2 direction = new(0, 0);
-            var outEdges = edges.OutEdges(n.Id);
-            var inEdges = edges.InEdges(n.Id);
-            foreach (var e in outEdges)
-            {
-                var dir = nodes[e.TargetId].Position - nodes[e.SourceId].Position;
-                direction += dir;
-            }
-            foreach (var e in inEdges)
-            {
-                var dir = nodes[e.SourceId].Position - nodes[e.TargetId].Position;
-                direction += dir;
-            }
-            Acceleration[n.Id] += direction;
-            n.Position += direction / edges.Degree(n.Id);
-        });
-
-        Parallel.ForEach(nodes, n =>
-        {
-            var accel = Acceleration[n.Id];
-            var shift = accel * Argz.computeIntervalMilliseconds / 1000;
-            n.Position += shift;
-            Acceleration[n.Id] *=(1-averageNodeDistance);
-        });
+            foreach (var d in PlanarRender.Positions)
+                Graph.Nodes[d.Key].Position = d.Value;
+        }
+        else
+            Done = true;
     }
 
     public Render(Canvas canvas)
     {
         Canvas = canvas;
-        Acceleration = new ConcurrentDictionary<int, Vector2>();
-        fixedPoints = new int[0];
         ArgumentsHandler Argz = new("settings.json");
         this.Argz = Argz;
         this.Graph = Helpers.CreateGraph(Argz);
-        Graph.Do.DelaunayTriangulation(x=>x.Position);
-        // Graph.Do.ConnectNodes(6);
-        foreach (var n in Graph.Nodes)
-        {
-            Acceleration[n.Id] = new(0, 0);
-        }
-        foreach(var n in Graph.Nodes) 
-            n.Position = new(Random.Shared.NextSingle(), Random.Shared.NextSingle());
-        FindFixedPoints(5);
-        Helpers.NormalizeNodePositions(Graph.Nodes);
+        Graph.Do.DelaunayTriangulation(x => x.Position);
+        // Graph.Do.ConnectToClosestParallel(5,(n1,n2)=>(n1.Position-n2.Position).Length());
+
+        this.PlanarRender = new PlanarGraphRender<Node, Edge>(Graph, 5);
+        ResetColors();
+
         var drawer = new CanvasShapeDrawer(Canvas);
-        var graphDrawer = new GraphDrawer<Node, Edge>(Graph, drawer, 1000,x=>x.Position);
+        var graphDrawer = new GraphDrawer<Node, Edge>(Graph, drawer, 1000, x => x.Position);
         this.Drawer = graphDrawer;
         this.CanvasDrawer = drawer;
     }
@@ -98,12 +62,14 @@ public class Render
         while (true)
         {
             Drawer.Clear(System.Drawing.Color.Empty);
+
             Drawer.DrawEdges(Graph.Edges, Argz.thickness);
             // Drawer.DrawDirections(Graph.Edges, Argz.thickness, Argz.directionLength, System.Drawing.Color.Orange);
-            // Drawer.DrawNodes(Graph.Nodes, Argz.nodeSize);
-            Drawer.DrawNodes(fixedPoints.Select(x => Graph.Nodes[x]), Argz.nodeSize);
+            Drawer.DrawNodes(Graph.Nodes, Argz.nodeSize);
+
+            // Drawer.DrawNodes(PlanarRender.FixedPoints.Select(x => Graph.Nodes[x]), Argz.nodeSize);
             // Drawer.DrawNodeIds(Graph.Nodes, System.Drawing.Color.Azure, Argz.fontSize);
-            CanvasDrawer.DrawText($"{EdgesLengthSum.ToString("0.00")} sum of edges length", new(700, 50), System.Drawing.Color.Azure, 20);
+            CanvasDrawer.DrawText($"{PlanarRender.EdgesLengthSum.ToString("0.00")} sum of edges length", new(700, 50), System.Drawing.Color.Azure, 20);
             CanvasDrawer.Dispatch();
             await Task.Delay(Argz.renderIntervalMilliseconds);
         }
@@ -113,9 +79,11 @@ public class Render
     double shift = 0.1f;
     public void OnKeyDown(KeyEventArgs e)
     {
-
         switch (e.Key)
         {
+            case Key.Space:
+                ShowHideFixedPointsBorder();
+                break;
             case Key.A:
                 this.Drawer.XShift += shift / this.Drawer.SizeMult;
                 break;
@@ -129,15 +97,15 @@ public class Render
                 this.Drawer.YShift -= shift / this.Drawer.SizeMult;
                 break;
             case Key.Up:
-                this.Drawer.XShift -= shift / this.Drawer.SizeMult/2;
-                this.Drawer.YShift -= shift / this.Drawer.SizeMult/2;
-                this.Drawer.SizeMult = this.Drawer.SizeMult*(1+shift);
+                this.Drawer.XShift -= shift / this.Drawer.SizeMult / 2;
+                this.Drawer.YShift -= shift / this.Drawer.SizeMult / 2;
+                this.Drawer.SizeMult = this.Drawer.SizeMult * (1 + shift);
 
                 break;
             case Key.Down:
-                this.Drawer.SizeMult = this.Drawer.SizeMult/(1+shift);
-                this.Drawer.XShift += shift / this.Drawer.SizeMult/2;
-                this.Drawer.YShift += shift / this.Drawer.SizeMult/2;
+                this.Drawer.SizeMult = this.Drawer.SizeMult / (1 + shift);
+                this.Drawer.XShift += shift / this.Drawer.SizeMult / 2;
+                this.Drawer.YShift += shift / this.Drawer.SizeMult / 2;
                 break;
             case Key.R:
                 this.Drawer.SizeMult = 1;
@@ -146,47 +114,107 @@ public class Render
                 break;
         }
     }
+
+    private void ShowHideFixedPointsBorder()
+    {
+        foreach (var n in Graph.Edges.InducedEdges(PlanarRender.FixedPoints))
+        {
+            if (n.Color == Color.Empty)
+                n.Color = Color.Green;
+            else
+                n.Color = Color.Empty;
+        }
+        PlanarRender.FixedPoints.Aggregate((n1, n2) =>
+        {
+            if (Graph.Edges.BetweenOrDefault(n1, n2) is Edge e)
+            {
+                if (e.Color == Color.Empty)
+                    e.Color = Color.Aqua;
+                else
+                    e.Color = Color.Empty;
+            }
+            return n2;
+        });
+        var n1 = PlanarRender.FixedPoints.First();
+        var n2 = PlanarRender.FixedPoints.Last();
+        if (Graph.Edges.BetweenOrDefault(n1, n2) is Edge e)
+        {
+            if (e.Color == Color.Empty)
+                e.Color = Color.Aqua;
+            else
+                e.Color = Color.Empty;
+        }
+    }
+
     public async void ComputeStuff()
     {
         while (!Done)
         {
-            
             DoStuff();
             await Task.Delay(Argz.computeIntervalMilliseconds);
         }
     }
-    public IList<Vector2> GenerateCoordinatesFor(int n)
+
+    internal void OnPointerPressed(PointerPressedEventArgs e)
     {
-        var coords = new List<Vector2>();
-        var step = 2.0f * MathF.PI / (n - 1);
-        var value = step;
-        for (int i = 0; i < n; i++)
+        var pos = e.GetPosition(Canvas);
+        var vec = new Vector2();
+        vec.X = (float)(pos.X / Drawer.Size);
+        vec.Y = (float)(pos.Y / Drawer.Size);
+        var closest = Graph.Nodes.Where(x => x.Color == Color.Red).MinBy(x => (x.Position - vec).Length());
+        if (closest is null) return;
+
+        var oldFixedPoints = PlanarRender.FixedPoints;
+        var newFixedPoints = new List<int>();
+        int FillNewFixedPoints(int n1, int n2, ref Node? closest, List<int> newFixedPoints)
         {
-            coords.Add(new Vector2(MathF.Cos(value), MathF.Sin(value)));
-            value += step;
+            newFixedPoints.Add(n1);
+            var common = Graph.Edges.Neighbors(n1).Intersect(Graph.Edges.Neighbors(n2)).ToList();
+            if (closest is not null)
+                if (common.Contains(closest.Id))
+                {
+                    newFixedPoints.Add(closest.Id);
+                    closest = null;
+                }
+            return n2;
         }
-        return coords;
-    }
-    public void FindFixedPoints(int count)
-    {
-        count += 1;
-        foreach (var e in Graph.Edges)
+        oldFixedPoints.Aggregate((n1, n2) =>
         {
-            var p = Graph.Do.FindAnyPath(e.TargetId, e.SourceId, x => !x.Equals(e)).Path;
-            if (p.Count() == count)
+            return FillNewFixedPoints(n1, n2, ref closest, newFixedPoints);
+        });
+
+        FillNewFixedPoints(oldFixedPoints.Last(),oldFixedPoints.First(),ref closest, newFixedPoints);
+        
+        PlanarRender.ResetFixedPoints(newFixedPoints.ToArray());
+
+
+
+        ResetColors();
+        Done = false;
+        Task.Run(ComputeStuff);
+    }
+
+
+
+    private void ResetColors()
+    {
+        Graph.Edges.SetColorToAll(Color.DarkViolet);
+        Graph.Nodes.SetColorToAll(Color.Empty);
+        ShowHideFixedPointsBorder();
+        foreach (var n in PlanarRender.FixedPoints)
+        {
+            Graph.Nodes[n].Color = Color.Orange;
+        }
+        PlanarRender.FixedPoints.Aggregate((n1, n2) =>
+        {
+            var intersections = Graph.Edges.Neighbors(n1).Intersect(Graph.Edges.Neighbors(n2)).ToList();
+            if (intersections.Count != 0)
             {
-                fixedPoints = p.Select(x => x.Id).ToArray();
-                break;
+                foreach (var n in intersections)
+                    if (!PlanarRender.FixedPoints.Contains(n))
+                        Graph.Nodes[n].Color = Color.Red;
             }
-        }
-        foreach (var n in fixedPoints.Zip(GenerateCoordinatesFor(fixedPoints.Length)))
-        {
-            Graph.Nodes[n.First].Color = System.Drawing.Color.Orange;
-            Graph.Nodes[n.First].Position = n.Second;
-        }
-    }
-    double GetEdgesLengthSum()
-    {
-        return Graph.Edges.Sum(x => (Graph.Nodes[x.SourceId].Position - Graph.Nodes[x.TargetId].Position).Length());
+            return n2;
+        });
     }
 }

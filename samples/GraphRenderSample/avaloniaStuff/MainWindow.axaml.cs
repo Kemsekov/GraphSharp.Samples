@@ -16,25 +16,32 @@ using Avalonia.Input;
 namespace Test;
 public partial class MainWindow : Window
 {
+    public Render RenderApp { get; }
+
     event Action<KeyEventArgs> OnKeyDownEvent;
     public MainWindow()
     {
         InitializeComponent();
         var Canvas = this.FindControl<Canvas>("MyCanvas");
-        var r = new Render(Canvas);
+        this.RenderApp = new Render(Canvas);
         OnKeyDownEvent = e=>{};
-        RunRenderAfterAppActivation(r);
+        RunRenderAfterAppActivation();
     }
 
 
-    async void RunRenderAfterAppActivation(Render r){
+    async void RunRenderAfterAppActivation(){
         while(!IsActive) await Task.Delay(10);
-        r.RenderStuff();
+        RenderApp.RenderStuff();
         #pragma warning disable
         //this non-awaiting call is intended
-        Task.Run(r.ComputeStuff);
+        Task.Run(RenderApp.ComputeStuff);
         #pragma warning restore
-        OnKeyDownEvent += r.OnKeyDown;
+        OnKeyDownEvent += RenderApp.OnKeyDown;
+    }
+    protected override void OnPointerPressed(PointerPressedEventArgs e)
+    {
+        RenderApp.OnPointerPressed(e);
+        base.OnPointerPressed(e);
     }
     protected override void OnKeyDown(KeyEventArgs e)
     {
