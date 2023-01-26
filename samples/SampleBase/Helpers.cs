@@ -86,7 +86,7 @@ public static class Helpers
             setPos(n, newPos);
         }
     }
-    public static void CreateImage<TNode, TEdge>(ArgumentsHandler argz, IGraph<TNode, TEdge> graph, Action<GraphDrawer<TNode, TEdge>> draw,Func<TNode,Vector2> getPos)
+    public static void CreateImage<TNode, TEdge>(ArgumentsHandler argz, IImmutableGraph<TNode, TEdge> graph, Action<GraphDrawer<TNode, TEdge>> draw,Func<TNode,Vector2> getPos)
     where TNode : INode
     where TEdge : IEdge
     {

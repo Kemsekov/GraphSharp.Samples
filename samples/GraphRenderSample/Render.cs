@@ -33,11 +33,16 @@ public class Render
         }
         if (PlanarRender.ComputeStep())
         {
-            foreach (var d in PlanarRender.Positions)
-                Graph.Nodes[d.Key].Position = d.Value;
+            UpdatePositions();
         }
         else
             Done = true;
+    }
+
+    private void UpdatePositions()
+    {
+        foreach (var d in PlanarRender.Positions)
+            Graph.Nodes[d.Key].Position = d.Value;
     }
 
     public Render(Canvas canvas)
@@ -47,7 +52,7 @@ public class Render
         this.Argz = Argz;
         this.Graph = Helpers.CreateGraph(Argz);
         Graph.Do.DelaunayTriangulation(x => x.Position);
-        // Graph.Do.ConnectToClosestParallel(5,(n1,n2)=>(n1.Position-n2.Position).Length());
+        // Graph.Do.ConnectToClosestParallel(10,(n1,n2)=>(n1.Position-n2.Position).Length());
 
         this.PlanarRender = new PlanarGraphRender<Node, Edge>(Graph, 5);
         ResetColors();
@@ -83,6 +88,12 @@ public class Render
         {
             case Key.Space:
                 ShowHideFixedPointsBorder();
+                break;
+            case Key.Escape:
+                PlanarRender.ResetFixedPoints(5);
+                UpdatePositions();
+                Done = false;
+                Task.Run(ComputeStuff);
                 break;
             case Key.A:
                 this.Drawer.XShift += shift / this.Drawer.SizeMult;
@@ -189,7 +200,6 @@ public class Render
         FillNewFixedPoints(oldFixedPoints.Last(),oldFixedPoints.First(),ref closest, newFixedPoints);
 
         PlanarRender.ResetFixedPoints(newFixedPoints.ToArray());
-
         ResetColors();
         Done = false;
         Task.Run(ComputeStuff);
