@@ -1,11 +1,11 @@
 {
     "nodeSeed" : -1,
     "connectionSeed" : 4,
-    "nodesCount" : 100,
+    "nodesCount" : 500,
     "node1" : 32,
     "node2" : 63,
-    "minEdges" : 2,
-    "maxEdges" : 0,
+    "minEdges" : 3,
+    "maxEdges" : 20,
     "steps" : 3000,
     "outputResolution" : 2000,
     "nodeSize" : 0.012,
@@ -13,5 +13,5 @@
     "fontSize" : 0.03,
     "directionLength" : 0.09,
     "renderIntervalMilliseconds" : 66,
-    "computeIntervalMilliseconds" : 0
+    "computeIntervalMilliseconds" : 100
 }

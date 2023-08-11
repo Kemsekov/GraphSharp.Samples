@@ -1,5 +1,5 @@
 using System.Drawing;
-using System.Numerics;
+using MathNet.Numerics.LinearAlgebra.Single;
 using System.Reflection;
 using GraphSharp.GraphDrawer;
 using SixLabors.Fonts;
@@ -39,19 +39,19 @@ namespace SampleBase
             Context.Clear(new SixLabors.ImageSharp.GraphicsOptions(), new SolidBrush(color.ToImageSharpColor()));
         }
 
-        public void DrawLine(Vector2 start, Vector2 end, Color color, double thickness)
+        public void DrawLine(Vector start, Vector end, Color color, double thickness)
         {
             var brush = new SolidBrush(color.ToImageSharpColor());
-            Context.DrawLines(new DrawingOptions() { }, brush, ((float)thickness), start, end);
+            Context.DrawLines(new DrawingOptions() { }, brush, ((float)thickness), new(start[0],start[1]), new(end[0],end[1]));
         }
-        public void DrawText(string text, Vector2 position, Color color,double fontSize = -1)
+        public void DrawText(string text, Vector position, Color color,double fontSize = -1)
         {
-            Context.DrawText(text, Font, color.ToImageSharpColor(), position);
+            Context.DrawText(text, Font, color.ToImageSharpColor(), new(position[0],position[1]));
         }
 
-        public void FillEllipse(Vector2 position, double width, double height, Color color)
+        public void FillEllipse(Vector position, double width, double height, Color color)
         {
-            var ellipse = new EllipsePolygon(position, ((float)(width+height))/2);
+            var ellipse = new EllipsePolygon(new(position[0],position[1]), ((float)(width+height))/2);
             var brush = new SolidBrush(color.ToImageSharpColor());
             Context.FillPolygon(new DrawingOptions() { }, brush, ellipse.Points.ToArray());
         }

@@ -3,13 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using GraphSharp;
 using GraphSharp.GraphDrawer;
 using GraphSharp.Graphs;
+using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace Test;
 public class Render
@@ -42,7 +42,7 @@ public class Render
     private void UpdatePositions()
     {
         foreach (var d in PlanarRender.Positions)
-            Graph.Nodes[d.Key].Position = d.Value;
+            Graph.Nodes[d.Key].Position = (Vector)d.Value;
     }
 
     public Render(Canvas canvas)
@@ -62,6 +62,8 @@ public class Render
         this.Drawer = graphDrawer;
         this.CanvasDrawer = drawer;
     }
+    Vector Vec(float x, float y)=> new DenseVector(new[]{x,y});
+
     public async void RenderStuff()
     {
         while (true)
@@ -74,7 +76,7 @@ public class Render
 
             // Drawer.DrawNodes(PlanarRender.FixedPoints.Select(x => Graph.Nodes[x]), Argz.nodeSize);
             // Drawer.DrawNodeIds(Graph.Nodes, System.Drawing.Color.Azure, Argz.fontSize);
-            CanvasDrawer.DrawText($"{PlanarRender.EdgesLengthSum.ToString("0.00")} sum of edges length", new(700, 50), System.Drawing.Color.Azure, 20);
+            CanvasDrawer.DrawText($"{PlanarRender.EdgesLengthSum.ToString("0.00")} sum of edges length", Vec(700, 50), System.Drawing.Color.Azure, 20);
             CanvasDrawer.Dispatch();
             await Task.Delay(Argz.renderIntervalMilliseconds);
         }
@@ -172,10 +174,8 @@ public class Render
     }
 
     void AddToCircle(Avalonia.Point pos){
-        var vec = new Vector2();
-        vec.X = (float)(pos.X / Drawer.Size);
-        vec.Y = (float)(pos.Y / Drawer.Size);
-        var closest = Graph.Nodes.Where(x => x.Color == Color.Red).MinBy(x => (x.Position - vec).Length());
+        var vec = new DenseVector(new float[]{(float)(pos.X / Drawer.Size),(float)(pos.Y / Drawer.Size)});
+        var closest = Graph.Nodes.Where(x => x.Color == Color.Red).MinBy(x => (x.Position - vec).L2Norm());
         if (closest is null) return;
 
         var oldFixedPoints = PlanarRender.FixedPoints;

@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 using SampleBase;
 using System.Text;
 using GraphSharp.Common;
-using System.Numerics;
 using GraphSharp.GraphDrawer;
 using SixLabors.ImageSharp.Processing;
+using MathNet.Numerics.LinearAlgebra.Single;
 
 public static class Helpers
 {
@@ -58,15 +58,15 @@ public static class Helpers
         var minY = float.MaxValue;
         foreach (var n in nodes)
         {
-            maxX = MathF.Max(n.Position.X, maxX);
-            maxY = MathF.Max(n.Position.Y, maxY);
-            minX = MathF.Min(n.Position.X, minX);
-            minY = MathF.Min(n.Position.Y, minY);
+            maxX = MathF.Max(n.Position[0], maxX);
+            maxY = MathF.Max(n.Position[1], maxY);
+            minX = MathF.Min(n.Position[0], minX);
+            minY = MathF.Min(n.Position[1], minY);
         }
-        var shift = new Vector2(minX, minY);
+        var shift = new DenseVector(new[]{minX, minY});
         foreach (var n in nodes)
         {
-            n.Position -= shift;
+            n.Position = (Vector)(n.Position- shift);
         }
         var diffX = maxX - minX;
         var diffY = maxY - minY;
@@ -74,19 +74,20 @@ public static class Helpers
         var maxDiff = MathF.Max(diffX, diffY);
         foreach (var n in nodes)
         {
-            n.Position /= maxDiff;
+            n.Position = (Vector)(n.Position/maxDiff);
         }
     }
-    public static void ShiftNodesToFitInTheImage<TNode>(IEnumerable<TNode> nodes, Func<TNode,Vector2> getPos, Action<TNode,Vector2> setPos)
+    static Vector Vec(float x, float y) => (Vector)(new DenseVector(new[]{x,y}));
+    public static void ShiftNodesToFitInTheImage<TNode>(IEnumerable<TNode> nodes, Func<TNode,Vector> getPos, Action<TNode,Vector> setPos)
     where TNode : INode
     {
         foreach (var n in nodes)
         {
-            var newPos = new Vector2(getPos(n).X * 0.9f + 0.05f, getPos(n).Y * 0.9f + 0.05f);
+            var newPos = Vec(getPos(n)[0] * 0.9f + 0.05f, getPos(n)[1] * 0.9f + 0.05f);
             setPos(n, newPos);
         }
     }
-    public static void CreateImage<TNode, TEdge>(ArgumentsHandler argz, IImmutableGraph<TNode, TEdge> graph, Action<GraphDrawer<TNode, TEdge>> draw,Func<TNode,Vector2> getPos)
+    public static void CreateImage<TNode, TEdge>(ArgumentsHandler argz, IImmutableGraph<TNode, TEdge> graph, Action<GraphDrawer<TNode, TEdge>> draw,Func<TNode,Vector> getPos)
     where TNode : INode
     where TEdge : IEdge
     {
@@ -113,10 +114,10 @@ public static class Helpers
             System.Console.WriteLine("Creating graph...");
             var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
             var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
-            result = new Graph(id => new(id) { Position = new(rand.NextSingle(), rand.NextSingle()) }, (n1, n2) => new(n1, n2) { Weight = (n1.Position - n2.Position).Length() });
+            result = new Graph(id => new(id) { Position = Vec(rand.NextSingle(), rand.NextSingle()) }, (n1, n2) => new(n1, n2) { Weight = (n1.Position - n2.Position).L2Norm() });
             result.Configuration.Rand = conRand;
             result.Do.CreateNodes(argz.nodesCount);
-            result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges,(n1,n2)=>(n1.Position-n2.Position).Length());
+            result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges,(n1,n2)=>(n1.Position-n2.Position).L2Norm());
         });
         return result ?? throw new Exception("Create node failure"); ;
     }
