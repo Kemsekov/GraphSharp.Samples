@@ -58,15 +58,15 @@ public static class Helpers
         var minY = float.MaxValue;
         foreach (var n in nodes)
         {
-            maxX = MathF.Max(n.Position[0], maxX);
-            maxY = MathF.Max(n.Position[1], maxY);
-            minX = MathF.Min(n.Position[0], minX);
-            minY = MathF.Min(n.Position[1], minY);
+            maxX = MathF.Max(n.MapProperties().Position[0], maxX);
+            maxY = MathF.Max(n.MapProperties().Position[1], maxY);
+            minX = MathF.Min(n.MapProperties().Position[0], minX);
+            minY = MathF.Min(n.MapProperties().Position[1], minY);
         }
         var shift = new DenseVector(new[]{minX, minY});
         foreach (var n in nodes)
         {
-            n.Position = (Vector)(n.Position- shift);
+            n.MapProperties().Position = (Vector)(n.MapProperties().Position- shift);
         }
         var diffX = maxX - minX;
         var diffY = maxY - minY;
@@ -74,7 +74,7 @@ public static class Helpers
         var maxDiff = MathF.Max(diffX, diffY);
         foreach (var n in nodes)
         {
-            n.Position = (Vector)(n.Position/maxDiff);
+            n.MapProperties().Position = (Vector)(n.MapProperties().Position/maxDiff);
         }
     }
     static Vector Vec(float x, float y) => (Vector)(new DenseVector(new[]{x,y}));
@@ -114,10 +114,18 @@ public static class Helpers
             System.Console.WriteLine("Creating graph...");
             var rand = new Random(argz.nodeSeed >= 0 ? argz.nodeSeed : new Random().Next());
             var conRand = new Random(argz.connectionSeed >= 0 ? argz.connectionSeed : new Random().Next());
-            result = new Graph(id => new(id) { Position = Vec(rand.NextSingle(), rand.NextSingle()) }, (n1, n2) => new(n1, n2) { Weight = (n1.Position - n2.Position).L2Norm() });
+            result = new Graph(id =>{
+                var n = new Node(id); 
+                n.MapProperties().Position = Vec(rand.NextSingle(), rand.NextSingle());
+                return n;
+            }, (n1, n2) => {
+                var e = new Edge(n1, n2);
+                e.MapProperties().Weight = (n1.MapProperties().Position - n2.MapProperties().Position).L2Norm();
+                return e;
+            });
             result.Configuration.Rand = conRand;
             result.Do.CreateNodes(argz.nodesCount);
-            result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges,(n1,n2)=>(n1.Position-n2.Position).L2Norm());
+            result.Do.ConnectToClosest(argz.minEdges, argz.maxEdges,(n1,n2)=>(n1.MapProperties().Position-n2.MapProperties().Position).L2Norm());
         });
         return result ?? throw new Exception("Create node failure"); ;
     }
