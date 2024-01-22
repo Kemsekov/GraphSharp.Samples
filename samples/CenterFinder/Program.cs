@@ -13,25 +13,27 @@ using SampleBase;
 
 ArgumentsHandler argz = new("settings.json");
 var graph = Helpers.CreateGraph(argz);
-// graph.Do.DelaunayTriangulation();
-Helpers.MeasureTime(() =>
-{
-    System.Console.WriteLine("Finding center by approximation (orange)");
-    var c1 = graph.Do.TryFindCenterByApproximation(x=>1,true);
-    System.Console.WriteLine($"Found {c1.center.Count()} center nodes with radius {c1.radius}");
-    foreach(var n in c1.center){
-        System.Console.WriteLine(n);
-        n.Color = Color.Orange;
-    }
-});
+graph.Do.DelaunayTriangulation(x=>x.MapProperties().Position);
+
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Finding center by dijkstras (blue)");
-    var c2 = graph.Do.FindCenterByDijkstras(x=>1,true);
+    var c2 = graph.Do.FindCenterByDijkstras(x=>1,true,0.01);
     System.Console.WriteLine($"Found {c2.center.Count()} center nodes with radius {c2.radius}");
     foreach(var n in c2.center){
         System.Console.WriteLine(n);
-        n.Color = Color.Blue;
+        n.MapProperties().Color = Color.Blue;
+    }
+});
+
+Helpers.MeasureTime(() =>
+{
+    System.Console.WriteLine("Finding center by approximation (orange)");
+    var c1 = graph.Do.TryFindCenterByApproximation(x=>1,true,0.01);
+    System.Console.WriteLine($"Found {c1.center.Count()} center nodes with radius {c1.radius}");
+    foreach(var n in c1.center){
+        System.Console.WriteLine(n);
+        n.MapProperties().Color = Color.Orange;
     }
 });
 
@@ -43,4 +45,4 @@ Helpers.CreateImage(argz, graph, drawer =>
     drawer.DrawNodesParallel(graph.Nodes, argz.nodeSize);
     // drawer.DrawNodeIds(graph.Nodes, Color.Wheat, argz.fontSize);
 
-},x=>x.Position);
+},x=>x.MapProperties().Position);

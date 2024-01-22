@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PageRank", "PageRank.csproj", "{FA4D8909-4121-48F5-BE5B-865A98D0ED26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PageRank", "PageRank.csproj", "{29D3F262-8E36-4D33-90E6-34E665022697}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FA4D8909-4121-48F5-BE5B-865A98D0ED26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA4D8909-4121-48F5-BE5B-865A98D0ED26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA4D8909-4121-48F5-BE5B-865A98D0ED26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA4D8909-4121-48F5-BE5B-865A98D0ED26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29D3F262-8E36-4D33-90E6-34E665022697}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29D3F262-8E36-4D33-90E6-34E665022697}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29D3F262-8E36-4D33-90E6-34E665022697}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29D3F262-8E36-4D33-90E6-34E665022697}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B36DC750-09E1-4784-9430-84951D084B64}
+		SolutionGuid = {F82D558B-DDB8-44FF-B5CC-B70290B73C2B}
 	EndGlobalSection
 EndGlobal

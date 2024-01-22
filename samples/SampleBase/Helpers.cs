@@ -117,10 +117,12 @@ public static class Helpers
             result = new Graph(id =>{
                 var n = new Node(id); 
                 n.MapProperties().Position = Vec(rand.NextSingle(), rand.NextSingle());
+                n.MapProperties().Color=System.Drawing.Color.Red;
                 return n;
             }, (n1, n2) => {
                 var e = new Edge(n1, n2);
                 e.MapProperties().Weight = (n1.MapProperties().Position - n2.MapProperties().Position).L2Norm();
+                e.MapProperties().Color=System.Drawing.Color.DarkViolet;
                 return e;
             });
             result.Configuration.Rand = conRand;

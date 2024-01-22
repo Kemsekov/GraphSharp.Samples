@@ -36,7 +36,7 @@ Helpers.MeasureTime(() =>
 
     //use some version of max flow computation
     var m1 = graph.Do.MaxFlowEdmondsKarp(65, 39);
-    // var m2 = graph.Do.MaxFlowGoogleOrTools(65, 39);
+    var m2 = graph.Do.MaxFlowGoogleOrTools(65, 39);
 
     maxFlow = m1;
     System.Console.WriteLine("Max flow is " + maxFlow.MaxFlow);

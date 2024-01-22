@@ -7,6 +7,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../GraphSharp/GraphSharp/GraphSharp.csproj" />
+        <ProjectReference Include="..\..\GraphSharp\GraphSharp.GoogleOrTools\GraphSharp.GoogleOrTools.csproj" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="*.ttf">
