@@ -27,7 +27,7 @@ IList<Node> path2 = new List<Node>();
 IList<Node> path3 = new List<Node>();
 IList<Node> path4 = new List<Node>();
 
-var pathType = PathType.InEdges;
+var pathType = PathType.OutEdges;
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Finding path by parallel any path finder (orange)");
@@ -57,14 +57,14 @@ Helpers.MeasureTime(()=>{
     graph.ValidatePath(p);
 });
 
-// Helpers.MeasureTime(()=>{
-//     System.Console.WriteLine("Finding path by  parallel Dijkstra path finder (green)");
-//     var p = graph.Do.FindShortestPathsDijkstra(startNode,pathType:pathType).GetPath(endNode);
-//     path4 = p.Path;
-//     System.Console.WriteLine($"Count of nodes in the path {path4.Count}");
-//     System.Console.WriteLine($"Path length {p.Cost}");
-//     graph.ValidatePath(p);
-// });
+Helpers.MeasureTime(()=>{
+    System.Console.WriteLine("Finding path by parallel Dijkstra path finder (green)");
+    var p = graph.Do.FindShortestPathsDijkstra(startNode,pathType:pathType).GetPath(endNode);
+    path4 = p.Path;
+    System.Console.WriteLine($"Count of nodes in the path {path4.Count}");
+    System.Console.WriteLine($"Path length {p.Cost}");
+    graph.ValidatePath(p);
+});
 
 Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.MapProperties().Position,(n,p)=>n.MapProperties().Position = p);
 graph.Edges.SetColorToAll(Color.FromArgb(10,50,50));
