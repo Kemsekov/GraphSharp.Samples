@@ -10,7 +10,15 @@ using GraphSharp.Visitors;
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-graph.Do.DelaunayTriangulationWithoutHull(x=>x.Position);
+graph.Do.DelaunayTriangulation(x=>x.MapProperties().Position);
+
+//remove 5% of longest edges to make graph more beautiful
+var edgesLengths = graph.Edges.Select(e=>e.Weight).ToArray();
+var percentile=MathNet.Numerics.Statistics.ArrayStatistics.PercentileInplace(edgesLengths,95);
+foreach(var e in graph.Edges){
+    if(e.Weight>percentile)
+        graph.Edges.Remove(e);
+}
 
 var startNode = argz.node1 % graph.Nodes.Count;
 var endNode = argz.node2 % graph.Nodes.Count;
@@ -49,16 +57,16 @@ Helpers.MeasureTime(()=>{
     graph.ValidatePath(p);
 });
 
-Helpers.MeasureTime(()=>{
-    System.Console.WriteLine("Finding path by  parallel Dijkstra path finder (green)");
-    var p = graph.Do.FindShortestPathsDijkstra(startNode,pathType:pathType).GetPath(endNode);
-    path4 = p.Path;
-    System.Console.WriteLine($"Count of nodes in the path {path4.Count}");
-    System.Console.WriteLine($"Path length {p.Cost}");
-    graph.ValidatePath(p);
-});
+// Helpers.MeasureTime(()=>{
+//     System.Console.WriteLine("Finding path by  parallel Dijkstra path finder (green)");
+//     var p = graph.Do.FindShortestPathsDijkstra(startNode,pathType:pathType).GetPath(endNode);
+//     path4 = p.Path;
+//     System.Console.WriteLine($"Count of nodes in the path {path4.Count}");
+//     System.Console.WriteLine($"Path length {p.Cost}");
+//     graph.ValidatePath(p);
+// });
 
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);
+Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.MapProperties().Position,(n,p)=>n.MapProperties().Position = p);
 graph.Edges.SetColorToAll(Color.FromArgb(10,50,50));
 Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
@@ -81,5 +89,5 @@ Helpers.CreateImage(argz,graph,drawer=>{
     {
         drawer.DrawPath(path4,argz.thickness,Color.Green);
     }
-},x=>x.Position);
+},x=>x.MapProperties().Position);
 
