@@ -1,7 +1,7 @@
 {
     "nodeSeed" : 1,
     "connectionSeed" : 2,
-    "nodesCount" : 100,
+    "nodesCount" : 10,
     "node1" : 32,
     "node2" : 63,
     "minEdges" : 5,
@@ -10,6 +10,6 @@
     "outputResolution" : 2000,
     "nodeSize" : 0.005,
     "thickness" : 0.002,
-    "fontSize" : 0.012,
+    "fontSize" : 0.015,
     "directionLength" : 0.09
 }
