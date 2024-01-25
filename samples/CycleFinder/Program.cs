@@ -1,16 +1,18 @@
 ﻿using System.Drawing;
 using GraphSharp;
+using GraphSharp.Common;
 using GraphSharp.Graphs;
+using MathNet.Numerics.LinearAlgebra.Single;
 
 //This sample shows how easy it is to find cycles basis!
 
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
-graph.Do.DelaunayTriangulation(x=>x.Position);
+graph.Do.DelaunayTriangulation(x=>x.MapProperties().Position);
 graph.Do.MakeBidirected();
-graph.CheckForIntegrityOfSimpleGraph();
-var cycles = Enumerable.Empty<IList<Node>>();
+
+var cycles = Enumerable.Empty<IPath<Node>>();
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine($"Finding cycles basis...");
@@ -25,7 +27,6 @@ foreach (var c in cycles)
 
 var orderedCycles = cycles.OrderBy(x => x.Count).ToList();
 
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);
 Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
@@ -36,6 +37,6 @@ Helpers.CreateImage(argz, graph, drawer =>
     foreach (var cycle in orderedCycles.Take(10))
     {
         var color = Color.FromArgb(255, Random.Shared.Next(256), Random.Shared.Next(256));
-        drawer.DrawPath(cycle,color,argz.thickness);
+        drawer.DrawPath(cycle,argz.thickness,color);
     }
-},x=>x.Position);
+},x=> (Vector)(x.MapProperties().Position*0.9f+0.05f));
