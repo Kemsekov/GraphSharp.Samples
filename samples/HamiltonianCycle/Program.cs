@@ -10,7 +10,7 @@ using MathNet.Numerics.LinearAlgebra.Single;
 double L2(Node n1, Node n2) => (n1.MapProperties().Position - n2.MapProperties().Position).L2Norm();
 
 ArgumentsHandler argz = new("settings.json");
-argz.filename = "output.jpeg";
+argz.filename = "output.jpg";
 var g = Helpers.CreateGraph(argz);
 
 Helpers.MeasureTime(() =>
