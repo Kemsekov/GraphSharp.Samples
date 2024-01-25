@@ -30,6 +30,6 @@ Helpers.CreateImage(argz,graph,drawer=>{
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
     drawer.DrawDirections(graph.Edges,argz.thickness,argz.directionLength,Color.CadetBlue);
     drawer.DrawNodesParallel(sources.Select(x=>graph.Nodes[x]),argz.nodeSize);
-    drawer.DrawNodeIds(sources.Select(x=>graph.Nodes[x]),Color.Azure,argz.fontSize);
+    drawer.DrawNodeIds(graph.Nodes,Color.Azure,argz.fontSize);
 },x=> (MathNet.Numerics.LinearAlgebra.Single.Vector)(x.MapProperties().Position*0.9f+0.05f));
 System.Console.WriteLine("Done");
