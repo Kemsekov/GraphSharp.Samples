@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using GraphSharp.Visitors;
+using GraphSharp;
 
 ArgumentsHandler argz = new("settings.json");
 
@@ -10,22 +10,26 @@ graph.Do.MakeSources(sources);
 
 Helpers.MeasureTime(()=>{
     System.Console.WriteLine("Doing topological sort...");
-    graph.Do.TopologicalSort().ApplyTopologicalSort((n,pos)=>n.Position = pos,x=>x.Position.Y);
+    var sorted = graph.Do.TopologicalSort().GetSortedByCoordinate();
+    foreach(var (component,coordinate) in sorted){
+        foreach(var node in component){
+            graph.Nodes[node].MapProperties().Position[0]= (float)coordinate;
+        }
+    }
 });
 
 foreach(var component in graph.Do.FindComponents().Components){
     var color = Color.FromArgb(Random.Shared.Next(256),Random.Shared.Next(256),Random.Shared.Next(256));
     foreach(var node in component){
-        node.Color = color;
+        node.MapProperties().Color = color;
     }
 }
 
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(x,pos)=>x.Position = pos);
 Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
     drawer.DrawDirections(graph.Edges,argz.thickness,argz.directionLength,Color.CadetBlue);
     drawer.DrawNodesParallel(sources.Select(x=>graph.Nodes[x]),argz.nodeSize);
     drawer.DrawNodeIds(sources.Select(x=>graph.Nodes[x]),Color.Azure,argz.fontSize);
-},x=>x.Position);
+},x=> (MathNet.Numerics.LinearAlgebra.Single.Vector)(x.MapProperties().Position*0.9f+0.05f));
 System.Console.WriteLine("Done");
