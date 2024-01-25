@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Drawing;
 using GraphSharp;
+using GraphSharp.Extensions;
 using GraphSharp.Graphs;
 using GraphSharp.Propagators;
 using GraphSharp.Visitors;
@@ -20,6 +22,24 @@ var low = mst.Forest.Sum(x=>x.Weight);
 
 IEnumerable<Node> path = new List<Node>();
 double cost = 0;
+//google or tools variant. It is uncomparable slow =(
+// Helpers.MeasureTime(() =>{
+//     var scale = 10000L;
+//     long dist(Node n1,Node n2)=>(long)(scale*NodeDistance(n1,n2));
+//     System.Console.WriteLine("Solving tsp by google or tools");
+//     graph.Do.DelaunayTriangulation(x=>x.MapProperties().Position);
+//     graph.Do.TransitiveClosureOnRadius(2);
+//     var distances = new ConcurrentDictionary<(int source,int target),long>();
+//     foreach(var e in graph.Edges){
+//         var s1 = Math.Min(e.SourceId,e.TargetId);
+//         var s2 = Math.Max(e.SourceId,e.TargetId);
+//         distances[(s1,s2)]=(long)(scale*NodeDistance(graph.Nodes[e.SourceId],graph.Nodes[e.TargetId]));
+//     }
+//     // var m = graph.Do.DistanceMatrix(dist);
+//     var tsp = graph.Do.TspGoogleOrTools((n1,n2) => distances.GetOrDefault((Math.Min(n1,n2),Math.Max(n1,n2)),1000000000L));
+//     System.Console.WriteLine(tsp.TourCost*1.0/scale/low);
+//     path = tsp.Tour;
+// });
 
 
 Helpers.MeasureTime(() =>
@@ -32,6 +52,7 @@ Helpers.MeasureTime(() =>
     System.Console.WriteLine("Rate " + cost / low);
     path = path1.Tour;
 });
+
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Improving solution by opt2");
