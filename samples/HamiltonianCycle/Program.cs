@@ -1,47 +1,45 @@
 ﻿using System.Drawing;
+using System.Runtime.Serialization;
+using Google.OrTools.LinearSolver;
+using Google.Protobuf.Reflection;
 using GraphSharp;
+using GraphSharp.Common;
 using GraphSharp.Graphs;
+using MathNet.Numerics.LinearAlgebra.Single;
+
+double L2(Node n1, Node n2) => (n1.MapProperties().Position - n2.MapProperties().Position).L2Norm();
 
 ArgumentsHandler argz = new("settings.json");
-var graph = Helpers.CreateGraph(argz);
-if (graph.Edges.Count == 0)
-    graph.Do.ConnectAsHamiltonianCycle(x => x.Position);
-var rand = graph.Configuration.Rand;
-for (int i = 0; i < 50; i++)
-{
-    var n1 = graph.Nodes[rand.Next(graph.Nodes.MaxNodeId + 1)];
-    var n2 =
-        graph.Nodes
-        .Where(x => x.Id != n1.Id)
-        .Where(x => graph.Edges.EdgesBetweenNodes(n1.Id, x.Id).Count() == 0)
-        .MinBy(x => (x.Position - n1.Position).Length());
-    if(n2 is null) continue;
-    var edge = graph.Configuration.CreateEdge(n1,n2);
-    // edge.Color = Color.Brown;
-    graph.Edges.Add(edge);
+argz.filename = "output.jpeg";
+var g = Helpers.CreateGraph(argz);
 
-}
-IList<Edge> b = new List<Edge>();
 Helpers.MeasureTime(() =>
 {
-    System.Console.WriteLine("Ham cycle");
-
-    var path = graph.Do.TryFindHamiltonianCycleByBubbleExpansion();
-    graph.ValidateCycle(path);
-    graph.ConvertPathToEdges(path.Path, out b);
-    graph.Nodes.SetColorToAll(Color.Aqua);
-    System.Console.WriteLine("Length of cycle is " + path.Cost);
-    foreach (var t in path)
-    {
-        t.Color = Color.Empty;
-    }
-
+    System.Console.WriteLine("Creating ham cycle / connecting");
+    g.Do.ConnectAsHamiltonianCycle(n => n.MapProperties().Position);
+    g.Do.ConnectToClosest(5, L2);
 });
 
-Helpers.CreateImage(argz, graph, drawer =>
+System.Console.WriteLine(g.Edges.Count);
+IEdgeSource<Edge> edgesInPath = new DefaultEdgeSource<Edge>();
+IPath<Node>? path = null;
+Helpers.MeasureTime(() =>
+{
+    var weights = (Edge e) => L2(g.Nodes[e.SourceId], g.Nodes[e.TargetId]); ;
+    System.Console.WriteLine("Searching ham cycle");
+    (path,edgesInPath) = g.Do.HamCycleDirected(weights, 100);
+});
+
+if(path is null) return;
+
+System.Console.WriteLine(path.PathType);
+g.ValidateCycle(path);
+
+
+Helpers.CreateImage(argz, g, drawer =>
 {
     drawer.Clear(Color.Black);
-    drawer.DrawEdgesParallel(graph.Edges.OrderBy(x=>x.Color==Color.Brown ? 0 : 1), argz.thickness);
-    drawer.DrawEdgesParallel(b, argz.thickness, Color.Orange);
-    drawer.DrawNodesParallel(graph.Nodes, argz.nodeSize);
-}, x => x.Position);
+    drawer.DrawEdgesParallel(g.Edges, argz.thickness, Color.DarkViolet);
+    drawer.DrawEdgesParallel(edgesInPath, argz.thickness, Color.Blue);
+    drawer.DrawNodeIds(g.Nodes, Color.Azure, argz.fontSize);
+}, x => (Vector)(g.Nodes[x.Id].MapProperties().Position * 0.9f + 0.05f));
