@@ -3,23 +3,25 @@ using System.Drawing;
 using GraphSharp;
 using GraphSharp.Adapters;
 
-//Here is a good example how ToQuikGraph adapter works in a real example
+//Here is a good example how ToQuikGraph adapter works as a real example
+
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
 var quikGraph = graph.Converter.ToQuikGraph();
-var pageRank = new QuikGraph.Algorithms.Ranking.PageRankAlgorithm<int,EdgeAdapter<Edge>>(quikGraph);
-pageRank.Damping = 0.85;
-pageRank.Tolerance = 0.001;
+var pageRank = new QuikGraph.Algorithms.Ranking.PageRankAlgorithm<int, EdgeAdapter<Edge>>(quikGraph)
+{
+    Damping = 0.85,
+    Tolerance = 0.001
+};
 pageRank.Compute();
 
 var ranks = pageRank.Ranks;
 
-//or just
+//or just use built-in pagerank which is 10 times faster
 // var ranks = graph.Do.PageRank().Ranks;
 
 
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);
 Helpers.CreateImage(argz, graph, drawer =>
 {
     drawer.Clear(Color.Black);
@@ -30,4 +32,4 @@ Helpers.CreateImage(argz, graph, drawer =>
         var coeff = ranks[n.Id];
         drawer.DrawNode(n,(double)(argz.nodeSize*coeff));
     }
-},x=>x.Position);
+},x=>x.MapProperties().Position);
