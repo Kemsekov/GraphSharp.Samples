@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -10,6 +5,8 @@ using GraphSharp;
 using GraphSharp.GraphDrawer;
 using GraphSharp.Graphs;
 using MathNet.Numerics.LinearAlgebra.Single;
+
+//this is example how to render graph in real-time.
 
 namespace Test;
 public class Render
@@ -42,7 +39,7 @@ public class Render
     private void UpdatePositions()
     {
         foreach (var d in PlanarRender.Positions)
-            Graph.Nodes[d.Key].Position = (Vector)d.Value;
+            Graph.Nodes[d.Key].MapProperties().Position = (Vector)d.Value;
     }
 
     public Render(Canvas canvas)
@@ -51,14 +48,13 @@ public class Render
         ArgumentsHandler Argz = new("settings.json");
         this.Argz = Argz;
         this.Graph = Helpers.CreateGraph(Argz);
-        Graph.Do.DelaunayTriangulation(x => x.Position);
+        Graph.Do.DelaunayTriangulation(x => x.MapProperties().Position);
         // Graph.Do.ConnectToClosestParallel(10,(n1,n2)=>(n1.Position-n2.Position).Length());
 
         this.PlanarRender = new PlanarGraphRender<Node, Edge>(Graph, 5);
-        ResetColors();
 
         var drawer = new CanvasShapeDrawer(Canvas);
-        var graphDrawer = new GraphDrawer<Node, Edge>(Graph, drawer, 1000, x => x.Position);
+        var graphDrawer = new GraphDrawer<Node, Edge>(Graph, drawer, 1000, x => x.MapProperties().Position);
         this.Drawer = graphDrawer;
         this.CanvasDrawer = drawer;
     }
@@ -89,7 +85,6 @@ public class Render
         switch (e.Key)
         {
             case Key.Space:
-                ShowHideFixedPointsBorder();
                 break;
             case Key.Escape:
                 PlanarRender.ResetFixedPoints(5);
@@ -128,37 +123,6 @@ public class Render
         }
     }
 
-    private void ShowHideFixedPointsBorder()
-    {
-        foreach (var n in Graph.Edges.InducedEdges(PlanarRender.FixedPoints))
-        {
-            if (n.Color == Color.Empty)
-                n.Color = Color.Green;
-            else
-                n.Color = Color.Empty;
-        }
-        PlanarRender.FixedPoints.Aggregate((n1, n2) =>
-        {
-            if (Graph.Edges.BetweenOrDefault(n1, n2) is Edge e)
-            {
-                if (e.Color == Color.Empty)
-                    e.Color = Color.Aqua;
-                else
-                    e.Color = Color.Empty;
-            }
-            return n2;
-        });
-        var n1 = PlanarRender.FixedPoints.First();
-        var n2 = PlanarRender.FixedPoints.Last();
-        if (Graph.Edges.BetweenOrDefault(n1, n2) is Edge e)
-        {
-            if (e.Color == Color.Empty)
-                e.Color = Color.Aqua;
-            else
-                e.Color = Color.Empty;
-        }
-    }
-
     public async void ComputeStuff()
     {
         while (!Done)
@@ -166,66 +130,5 @@ public class Render
             DoStuff();
             await Task.Delay(Argz.computeIntervalMilliseconds);
         }
-    }
-
-    internal void OnPointerPressed(PointerPressedEventArgs e)
-    {
-        AddToCircle(e.GetPosition(Canvas));
-    }
-
-    void AddToCircle(Avalonia.Point pos){
-        var vec = new DenseVector(new float[]{(float)(pos.X / Drawer.Size),(float)(pos.Y / Drawer.Size)});
-        var closest = Graph.Nodes.Where(x => x.Color == Color.Red).MinBy(x => (x.Position - vec).L2Norm());
-        if (closest is null) return;
-
-        var oldFixedPoints = PlanarRender.FixedPoints;
-        var newFixedPoints = new List<int>();
-        int FillNewFixedPoints(int n1, int n2, ref Node? closest, List<int> newFixedPoints)
-        {
-            newFixedPoints.Add(n1);
-            var common = Graph.Edges.Neighbors(n1).Intersect(Graph.Edges.Neighbors(n2)).ToList();
-            if (closest is not null)
-                if (common.Contains(closest.Id))
-                {
-                    newFixedPoints.Add(closest.Id);
-                    closest = null;
-                }
-            return n2;
-        }
-        oldFixedPoints.Aggregate((n1, n2) =>
-        {
-            return FillNewFixedPoints(n1, n2, ref closest, newFixedPoints);
-        });
-
-        FillNewFixedPoints(oldFixedPoints.Last(),oldFixedPoints.First(),ref closest, newFixedPoints);
-
-        PlanarRender.ResetFixedPoints(newFixedPoints.ToArray());
-        ResetColors();
-        Done = false;
-        Task.Run(ComputeStuff);
-    }
-
-    private void ResetColors()
-    {
-        Graph.Edges.SetColorToAll(Color.DarkViolet);
-        Graph.Nodes.SetColorToAll(Color.Empty);
-        ShowHideFixedPointsBorder();
-        
-        PlanarRender.FixedPoints.Aggregate((n1, n2) =>
-        {
-            var intersections = Graph.Edges.Neighbors(n1).Intersect(Graph.Edges.Neighbors(n2)).ToList();
-            if (intersections.Count != 0)
-            {
-                foreach (var n in intersections)
-                    if (!PlanarRender.FixedPoints.Contains(n))
-                        Graph.Nodes[n].Color = Color.Red;
-            }
-            return n2;
-        });
-    }
-
-    internal void OnPointerWheelChanged(PointerWheelEventArgs e)
-    {
-        AddToCircle(e.GetPosition(Canvas));
     }
 }
