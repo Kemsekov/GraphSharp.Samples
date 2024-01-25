@@ -1,5 +1,7 @@
 ﻿using System.Drawing;
+using GraphSharp;
 using GraphSharp.Graphs;
+using MathNet.Numerics.LinearAlgebra.Single;
 
 ArgumentsHandler argz = new("settings.json");
 
@@ -14,13 +16,12 @@ Helpers.MeasureTime(() =>
         var color = Color.FromArgb(Random.Shared.Next(256), Random.Shared.Next(256), Random.Shared.Next(256));
         foreach (var n in c)
         {
-            n.Color = color;
+            n.MapProperties().Color = color;
         }
     }
 });
-Helpers.ShiftNodesToFitInTheImage(graph.Nodes,x=>x.Position,(n,p)=>n.Position = p);
 Helpers.CreateImage(argz,graph,drawer=>{
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges,argz.thickness);
     drawer.DrawNodesParallel(graph.Nodes,argz.nodeSize);
-},x=>x.Position);
+},x=> (Vector)(x.MapProperties().Position*0.9f+0.05f));
