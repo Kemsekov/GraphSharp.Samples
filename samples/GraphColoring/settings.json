@@ -1,7 +1,7 @@
 {
     "nodeSeed" : 22,
     "connectionSeed" : 4,
-    "nodesCount" : 5000,
+    "nodesCount" : 1000,
     "node1" : 432,
     "node2" : 63,
     "minEdges" : 5,

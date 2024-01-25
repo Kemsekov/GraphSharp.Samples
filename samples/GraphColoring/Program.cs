@@ -1,17 +1,21 @@
 ﻿
 using System.Drawing;
+using GraphSharp;
 using GraphSharp.Adapters;
 using GraphSharp.Graphs;
 using QuikGraph.Algorithms.VertexColoring;
+
+// I am very proud of colorings in my library
 
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
 if (graph.Edges.Count == 0)
-    graph.Do.DelaunayTriangulation(x => x.Position);
+    graph.Do.DelaunayTriangulation(x => x.MapProperties().Position);
 
 var colors =
     new[] { Color.Azure, Color.Yellow, Color.Red, Color.Coral, Color.Blue, Color.Violet, Color.Aqua,Color.Green,Color.Orange,Color.Brown,Color.Aquamarine };
+
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Greedy coloring graph...");
@@ -34,6 +38,7 @@ Helpers.MeasureTime(() =>
     }
     graph.Nodes.SetColorToAll(Color.Empty);
 });
+
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("DSatur coloring graph...");
@@ -56,6 +61,7 @@ Helpers.MeasureTime(() =>
     }
     graph.Nodes.SetColorToAll(Color.Empty);
 });
+
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("QuikGraph coloring graph...");
@@ -78,6 +84,7 @@ Helpers.MeasureTime(() =>
     }
     graph.Nodes.SetColorToAll(Color.Empty);
 });
+
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Recursive largest first (RLF) coloring graph...");
@@ -98,7 +105,6 @@ Helpers.MeasureTime(() =>
     {
         System.Console.WriteLine(ex.Message);
     }
-    // graph.Nodes.SetColorToAll(Color.Empty);
 });
 
 Helpers.CreateImage(argz, graph, drawer =>
@@ -106,4 +112,4 @@ Helpers.CreateImage(argz, graph, drawer =>
     drawer.Clear(Color.Black);
     drawer.DrawEdgesParallel(graph.Edges, argz.thickness);
     drawer.DrawNodes(graph.Nodes, argz.nodeSize);
-}, x => x.Position);
+}, x => x.MapProperties().Position);
