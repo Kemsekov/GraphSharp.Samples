@@ -70,8 +70,8 @@ Helpers.MeasureTime(() =>
 
 Helpers.MeasureTime(() =>
 {
-    System.Console.WriteLine("SAT coloring graph with time limit 1 sec...");
-    var coloring = graph.Do.SATColoring(6,1000,out var satResult);
+    System.Console.WriteLine("SAT coloring graph with 6 colors...");
+    var coloring = graph.Do.SATColoring(6,out var satResult);
     System.Console.WriteLine("Coloring: " +satResult);
     ColoringInformation(coloring,graph,colors);
 });
