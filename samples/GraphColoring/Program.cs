@@ -7,6 +7,25 @@ using QuikGraph.Algorithms.VertexColoring;
 
 // I am very proud of colorings in my library
 
+void ColoringInformation(ColoringResult coloring,Graph graph, Color[]? colors){
+    var usedColors = coloring.CountUsedColors();
+    System.Console.WriteLine($"Total colors used : {usedColors.Where(x => x.Value != 0).Count()}");
+    foreach (var colorInfo in usedColors.OrderByDescending(x => x.Value))
+    {
+        System.Console.WriteLine(colorInfo);
+    }
+    System.Console.WriteLine("Nodes colored : {0}", usedColors.Sum(x => x.Value));
+    coloring.ApplyColors(graph.Nodes,colors);
+    try
+    {
+        graph.EnsureRightColoring();
+    }
+    catch (Exception ex)
+    {
+        System.Console.WriteLine(ex.Message);
+    }
+}
+
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
@@ -20,22 +39,7 @@ Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Greedy coloring graph...");
     var coloring = graph.Do.GreedyColorNodes();
-    var usedColors = coloring.CountUsedColors();
-    System.Console.WriteLine($"Total colors used : {usedColors.Where(x => x.Value != 0).Count()}");
-    foreach (var colorInfo in usedColors.OrderByDescending(x => x.Value))
-    {
-        System.Console.WriteLine(colorInfo);
-    }
-    System.Console.WriteLine("Nodes colored : {0}", usedColors.Sum(x => x.Value));
-    coloring.ApplyColors(graph.Nodes,colors);
-    try
-    {
-        graph.EnsureRightColoring();
-    }
-    catch (Exception ex)
-    {
-        System.Console.WriteLine(ex.Message);
-    }
+
     graph.Nodes.SetColorToAll(Color.Empty);
 });
 
@@ -43,22 +47,7 @@ Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("DSatur coloring graph...");
     var coloring = graph.Do.DSaturColorNodes();
-    var usedColors = coloring.CountUsedColors();
-    System.Console.WriteLine($"Total colors used : {usedColors.Where(x => x.Value != 0).Count()}");
-    foreach (var colorInfo in usedColors.OrderByDescending(x => x.Value))
-    {
-        System.Console.WriteLine(colorInfo);
-    }
-    System.Console.WriteLine("Nodes colored : {0}", usedColors.Sum(x => x.Value));
-    coloring.ApplyColors(graph.Nodes,colors);
-    try
-    {
-        graph.EnsureRightColoring();
-    }
-    catch (Exception ex)
-    {
-        System.Console.WriteLine(ex.Message);
-    }
+    ColoringInformation(coloring,graph,colors);
     graph.Nodes.SetColorToAll(Color.Empty);
 });
 
@@ -66,22 +55,7 @@ Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("QuikGraph coloring graph...");
     var coloring = graph.Do.QuikGraphColorNodes();
-    var usedColors = coloring.CountUsedColors();
-    System.Console.WriteLine($"Total colors used : {usedColors.Where(x => x.Value != 0).Count()}");
-    foreach (var colorInfo in usedColors.OrderByDescending(x => x.Value))
-    {
-        System.Console.WriteLine(colorInfo);
-    }
-    System.Console.WriteLine("Nodes colored : {0}", usedColors.Sum(x => x.Value));
-    coloring.ApplyColors(graph.Nodes,colors);
-    try
-    {
-        graph.EnsureRightColoring();
-    }
-    catch (Exception ex)
-    {
-        System.Console.WriteLine(ex.Message);
-    }
+    ColoringInformation(coloring,graph,colors);
     graph.Nodes.SetColorToAll(Color.Empty);
 });
 
@@ -89,22 +63,17 @@ Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Recursive largest first (RLF) coloring graph...");
     var coloring = graph.Do.RLFColorNodes();
-    var usedColors = coloring.CountUsedColors();
-    System.Console.WriteLine($"Total colors used : {usedColors.Where(x => x.Value != 0).Count()}");
-    foreach (var colorInfo in usedColors.OrderByDescending(x => x.Value))
-    {
-        System.Console.WriteLine(colorInfo);
-    }
-    System.Console.WriteLine("Nodes colored : {0}", usedColors.Sum(x => x.Value));
-    coloring.ApplyColors(graph.Nodes,colors);
-    try
-    {
-        graph.EnsureRightColoring();
-    }
-    catch (Exception ex)
-    {
-        System.Console.WriteLine(ex.Message);
-    }
+    ColoringInformation(coloring,graph,colors);
+    graph.Nodes.SetColorToAll(Color.Empty);
+
+});
+
+Helpers.MeasureTime(() =>
+{
+    System.Console.WriteLine("SAT coloring graph with time limit 1 sec...");
+    var coloring = graph.Do.SATColoring(6,1000,out var satResult);
+    System.Console.WriteLine("Coloring: " +satResult);
+    ColoringInformation(coloring,graph,colors);
 });
 
 Helpers.CreateImage(argz, graph, drawer =>
