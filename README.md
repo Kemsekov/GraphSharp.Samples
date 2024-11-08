@@ -1,4 +1,4 @@
-This fonder contains samples for Kemsekov.GraphSharp library.
+This folder contains samples for Kemsekov.GraphSharp library.
 
 To run it git clone this repo, init submodules and run any sample
 
