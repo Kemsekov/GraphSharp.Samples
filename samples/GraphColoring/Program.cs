@@ -1,5 +1,4 @@
-﻿
-using System.Drawing;
+﻿using System.Drawing;
 using GraphSharp;
 using GraphSharp.Adapters;
 using GraphSharp.Graphs;
@@ -29,16 +28,21 @@ void ColoringInformation(ColoringResult coloring,Graph graph, Color[]? colors){
 ArgumentsHandler argz = new("settings.json");
 
 var graph = Helpers.CreateGraph(argz);
+
 if (graph.Edges.Count == 0)
     graph.Do.DelaunayTriangulation(x => x.MapProperties().Position);
 
+System.Console.WriteLine($"Nodes {graph.Nodes.Count()}");
+System.Console.WriteLine($"Edges {graph.Edges.Count()}");
+
 var colors =
-    new[] { Color.Azure, Color.Yellow, Color.Red, Color.Coral, Color.Blue, Color.Violet, Color.Aqua,Color.Green,Color.Orange,Color.Brown,Color.Aquamarine };
+    new[] { Color.Yellow, Color.Red, Color.Coral, Color.Blue, Color.Violet, Color.Aqua,Color.Green,Color.Orange,Color.Brown,Color.Aquamarine };
 
 Helpers.MeasureTime(() =>
 {
     System.Console.WriteLine("Greedy coloring graph...");
     var coloring = graph.Do.GreedyColorNodes();
+    ColoringInformation(coloring,graph,colors);
 
     graph.Nodes.SetColorToAll(Color.Empty);
 });
@@ -51,34 +55,39 @@ Helpers.MeasureTime(() =>
     graph.Nodes.SetColorToAll(Color.Empty);
 });
 
-Helpers.MeasureTime(() =>
-{
-    System.Console.WriteLine("QuikGraph coloring graph...");
-    var coloring = graph.Do.QuikGraphColorNodes();
-    ColoringInformation(coloring,graph,colors);
-    graph.Nodes.SetColorToAll(Color.Empty);
-});
+// Helpers.MeasureTime(() =>
+// {
+//     System.Console.WriteLine("QuikGraph coloring graph...");
+//     var coloring = graph.Do.QuikGraphColorNodes();
+//     ColoringInformation(coloring,graph,colors);
+//     graph.Nodes.SetColorToAll(Color.Empty);
+// });
+
+// Helpers.MeasureTime(() =>
+// {
+//     System.Console.WriteLine("Recursive largest first (RLF) coloring graph...");
+//     var coloring = graph.Do.RLFColorNodes();
+//     ColoringInformation(coloring,graph,colors);
+//     graph.Nodes.SetColorToAll(Color.Empty);
+// });
 
 Helpers.MeasureTime(() =>
 {
-    System.Console.WriteLine("Recursive largest first (RLF) coloring graph...");
-    var coloring = graph.Do.RLFColorNodes();
-    ColoringInformation(coloring,graph,colors);
-    graph.Nodes.SetColorToAll(Color.Empty);
-
-});
-
-Helpers.MeasureTime(() =>
-{
-    System.Console.WriteLine("SAT coloring graph with 6 colors...");
-    var coloring = graph.Do.SATColoring(6,out var satResult);
-    System.Console.WriteLine("Coloring: " +satResult);
-    ColoringInformation(coloring,graph,colors);
+    System.Console.WriteLine("SAT coloring graph...");
+    foreach(var colors_count in new[]{2,3,4,5,6,7,8,9,10,11,12,13,14,15}){
+        var coloring = graph.Do.SATColoring(colors_count,out var satResult);
+        if(coloring.CountUsedColors().Keys.Count()!=colors_count){
+            continue;
+        }
+        System.Console.WriteLine("Coloring: " +satResult);
+        ColoringInformation(coloring,graph,colors);
+        break;
+    }
 });
 
 Helpers.CreateImage(argz, graph, drawer =>
 {
-    drawer.Clear(Color.Black);
-    drawer.DrawEdgesParallel(graph.Edges, argz.thickness);
+    drawer.Clear(Color.White);
+    drawer.DrawEdgesParallel(graph.Edges, argz.thickness,Color.Black);
     drawer.DrawNodes(graph.Nodes, argz.nodeSize);
 }, x => x.MapProperties().Position);
