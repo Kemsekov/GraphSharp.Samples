@@ -34,10 +34,11 @@ public class FontHelper
     public static async Task<string> GetNotoSans()
     {
         string tmpFolder = System.IO.Path.GetTempPath();
-        string fontPath = System.IO.Path.Combine(tmpFolder, FileName);
+        string fontPath = System.IO.Path.Combine(FileName);
 
         if (!File.Exists(fontPath))
         {
+            Console.WriteLine($"Downloading font to {fontPath}");
             using var httpClient = new HttpClient();
             var data = await httpClient.GetByteArrayAsync(FileUrl);
             await File.WriteAllBytesAsync(fontPath, data);
@@ -67,7 +68,7 @@ public static class ImageSharpTextHelper
         // Compute the top-left position so the text is centered
         var topLeft = new PointF(
             center.X - rect.Width * 0.25f,
-            center.Y);
+            center.Y - rect.Height * 0f);
 
         // Draw the text
         ctx.DrawText(new RichTextOptions(font) { Origin = topLeft }, text, color);
@@ -80,8 +81,7 @@ public class ImageSharpShapeDrawer : IShapeDrawer
         IImmutableGraph<TNode, TEdge> graph,
         Action<GraphDrawer<TNode, TEdge>> draw,
         Func<TNode, Vector> getPos,
-        int outputResolution = 1000,
-        int fontSize = 20
+        int outputResolution = 1000
     )
     where TNode : INode
     where TEdge : IEdge
@@ -89,20 +89,18 @@ public class ImageSharpShapeDrawer : IShapeDrawer
         var image = new Image<Rgba32>(outputResolution, outputResolution);
         image.Mutate(x =>
         {
-            var shapeDrawer = new ImageSharpShapeDrawer(x, image, fontSize);
+            var shapeDrawer = new ImageSharpShapeDrawer(x, image);
             var drawer = new GraphDrawer<TNode, TEdge>(graph, shapeDrawer, outputResolution, getPos);
             draw(drawer);
         });
         return image;
     }
     public IImageProcessingContext Context { get; }
-    public double FontSize { get; }
     public Image<Rgba32> Image { get; }
-    public Font Font { get; }
-    public ImageSharpShapeDrawer(IImageProcessingContext context, Image<Rgba32> image, float fontSize)
+    public FontCollection Fonts { get; }
+    public ImageSharpShapeDrawer(IImageProcessingContext context, Image<Rgba32> image)
     {
         Context = context;
-        FontSize = fontSize;
         Image = image;
         FontCollection fonts = new FontCollection();
         // https://github.com/Kemsekov/GraphSharp.Samples/raw/refs/heads/main/samples/SampleBase/NotoSans-Bold.ttf
@@ -111,7 +109,7 @@ public class ImageSharpShapeDrawer : IShapeDrawer
         {
             fonts.Add(stream);
         }
-        Font = fonts.Get("Noto Sans").CreateFont(fontSize);
+        this.Fonts = fonts;
     }
 
     public void Clear(System.Drawing.Color color)
@@ -126,8 +124,8 @@ public class ImageSharpShapeDrawer : IShapeDrawer
     }
     public void DrawText(string text, Vector position, System.Drawing.Color color, double fontSize = -1)
     {
-        var bush = new SolidBrush(color.ToImageSharpColor());
-        Context.DrawCenteredText(text, Font, color.ToImageSharpColor(), new(position[0], position[1]));
+        var font = Fonts.Get("Noto Sans").CreateFont((float)fontSize);
+        Context.DrawCenteredText(text, font, color.ToImageSharpColor(), new(position[0], position[1]));
     }
 
     public void FillEllipse(Vector position, double width, double height, System.Drawing.Color color)
